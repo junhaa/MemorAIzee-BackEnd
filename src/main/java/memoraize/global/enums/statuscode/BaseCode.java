@@ -7,7 +7,7 @@ public interface BaseCode {
 
 	String getMessage();
 
-	HttpStatus getStatus();
+	HttpStatus getHttpStatus();
 
 	Integer getStatusValue();
 }

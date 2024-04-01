@@ -27,7 +27,7 @@ public enum SuccessStatus implements BaseCode{
 	}
 
 	@Override
-	public HttpStatus getStatus() {
+	public HttpStatus getHttpStatus() {
 		return httpStatus;
 	}
 
