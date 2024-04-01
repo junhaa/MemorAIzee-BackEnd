@@ -32,8 +32,8 @@ public class AmazonConfig {
 	@Value("${cloud.aws.s3.bucket}")
 	private String bucket;
 
-	@Value("${cloud.aws.s3.path.postImage}")
-	private String postImagePath;
+	@Value("${cloud.aws.s3.path.photoImage}")
+	private String photoImagePath;
 
 
 

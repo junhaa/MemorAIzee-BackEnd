@@ -1,23 +1,10 @@
 package memoraize.domain.photo.service;
 
-import java.util.UUID;
+import java.util.List;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import memoraize.domain.photo.web.dto.PhotoRequestDTO;
+import memoraize.domain.photo.web.dto.PhotoResponseDTO;
 
-import lombok.RequiredArgsConstructor;
-import memoraize.domain.photo.repository.UuidRepository;
-
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class PhotoService {
-
-	private final UuidRepository uuidRepository;
-
-	public void makeUuid(){
-		String uuid = UUID.randomUUID().toString();
-		String save = uuidRepository.save(uuid);
-	}
-
+public interface PhotoService {
+	List<PhotoResponseDTO.saveReviewResultDTO> savePhotoImages(PhotoRequestDTO.savePhotoDTO request);
 }

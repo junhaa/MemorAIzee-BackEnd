@@ -1,10 +1,15 @@
 package memoraize.domain.photo.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,8 +33,9 @@ public class Photo extends BaseEntity {
 	private String imageUrl;
 
 
-	@Column(name = "photo_comment", nullable = false)
+	@Column(name = "photo_comment")
 	private String comment;
 
-
+	@OneToMany(mappedBy = "photo", cascade = CascadeType.ALL)
+	private List<PhotoHashTag> photoHashTagList = new ArrayList<>();
 }

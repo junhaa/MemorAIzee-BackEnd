@@ -35,3 +35,13 @@ out/
 
 ### VS Code ###
 .vscode/
+
+.DS_Store
+src/main/resources/*.properties
+src/main/resources/*.yml
+
+**/src/*.properties
+**/src/*.yml
+
+*.pem
+*.html
