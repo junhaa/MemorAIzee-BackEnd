@@ -40,7 +40,7 @@ jobs:
       - name: make application.yml
         run: |
           mkdir -p src/main/resources
-          echo "$APPLICATION" > src/main/resources/application.properties
+          echo "$APPLICATION" > src/main/resources/application.yml
         env:
           APPLICATION: ${{ secrets.APPLICATION }}
 
