@@ -23,20 +23,18 @@ import memoraize.global.aws.s3.AmazonS3Manager;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class PhotoServiceImpl implements PhotoService{
+public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 	private final UuidRepository uuidRepository;
 	private final AmazonS3Manager amazonS3Manager;
 	private final PhotoRepository photoRepository;
 
 	@Override
-	@Transactional
-	public List<PhotoResponseDTO.saveReviewResultDTO> savePhotoImages(PhotoRequestDTO.savePhotoDTO request){
+	public List<Photo> savePhotoImages(List<MultipartFile> request){
 
 		List<Photo> photoList = new ArrayList<>();
-		List<PhotoResponseDTO.saveReviewResultDTO> photoResultList = new ArrayList<>();
 
-		for(MultipartFile image : request.getPhotoImages()){
+		for(MultipartFile image : request){
 
 			// Google Vision API 호출
 
@@ -52,15 +50,11 @@ public class PhotoServiceImpl implements PhotoService{
 				//해시태그 리스트 추가
 				.build();
 
-			Photo savedPhoto = photoRepository.save(photo);
-			photoList.add(savedPhoto);
+			// Photo savedPhoto = photoRepository.save(photo);
+			// photoList.add(savedPhoto);
+			photoList.add(photo);
 		}
 
-		for(Photo p : photoList){
-			PhotoResponseDTO.saveReviewResultDTO res = PhotoConverter.toSaveReviewResultDTO(p);
-			photoResultList.add(res);
-		}
-
-		return photoResultList;
+		return photoList;
 	}
 }

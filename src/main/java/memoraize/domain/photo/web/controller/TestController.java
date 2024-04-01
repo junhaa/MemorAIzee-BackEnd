@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import memoraize.domain.photo.service.PhotoService;
+import memoraize.domain.photo.entity.Photo;
+import memoraize.domain.photo.service.PhotoCommandService;
 import memoraize.domain.photo.web.dto.PhotoRequestDTO;
 import memoraize.domain.photo.web.dto.PhotoResponseDTO;
 import memoraize.global.response.ApiResponse;
@@ -25,13 +26,13 @@ import memoraize.global.response.ApiResponse;
 @RequestMapping("/test")
 public class TestController {
 
-	private final PhotoService photoService;
+	private final PhotoCommandService photoCommandService;
 
 	@PostMapping("/photo")
-	public ApiResponse<List<PhotoResponseDTO.saveReviewResultDTO>> savePhoto(
+	public ApiResponse<List<Photo>> savePhoto(
 		@Valid @ModelAttribute PhotoRequestDTO.savePhotoDTO request) {
 		log.info("request = {}", request);
-		List<PhotoResponseDTO.saveReviewResultDTO> photos = photoService.savePhotoImages(request);
+		List<Photo> photos = photoCommandService.savePhotoImages(request.getPhotoImages());
 		return ApiResponse.onSuccess(photos);
 	}
 }
