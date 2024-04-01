@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import memoraize.global.enums.statuscode.BaseCode;
 
 @RequiredArgsConstructor
-public class GeneralException {
+public class GeneralException extends RuntimeException{
 	private final BaseCode errorStatus;
 
 	public String getErrorCode() {
@@ -18,6 +18,6 @@ public class GeneralException {
 	}
 
 	public HttpStatus getHttpStatus() {
-		return errorStatus.getStatus();
+		return errorStatus.getHttpStatus();
 	}
 }
