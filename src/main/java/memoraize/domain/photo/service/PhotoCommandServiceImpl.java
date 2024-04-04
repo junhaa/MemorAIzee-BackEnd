@@ -72,7 +72,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 		return photoList;
 	}
 
-	private static GeoLocation extractLocation(MultipartFile file) {
+	public static GeoLocation extractLocation(MultipartFile file) {
 		try {
 			// MultipartFile을 File로 변환. 실제 사용 시 임시 파일을 생성하고 사용 후 삭제해야 할 수 있음.
 			File imageFile = convertToFile(file);
