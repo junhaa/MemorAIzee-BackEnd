@@ -35,6 +35,9 @@ public class AmazonConfig {
 	@Value("${cloud.aws.s3.path.photoImage}")
 	private String photoImagePath;
 
+	@Value("${cloud.aws.s3.path.reviewImage}")
+	private String reviewImagePath;
+
 
 
 	@PostConstruct

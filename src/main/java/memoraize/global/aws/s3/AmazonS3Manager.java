@@ -23,7 +23,7 @@ public class AmazonS3Manager {
 	private final AmazonS3 amazonS3;
 	private final AmazonConfig amazonConfig;
 
-	public String uploadFile(String keyName, MultipartFile file){
+	public String uploadFile(String keyName, MultipartFile file) {
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentType(file.getContentType());
 		metadata.setContentLength(file.getSize());
@@ -31,10 +31,9 @@ public class AmazonS3Manager {
 			PutObjectResult putObjectResult = amazonS3.putObject(
 				new PutObjectRequest(amazonConfig.getBucket(), keyName, file.getInputStream(), metadata));
 			log.info("result={}", putObjectResult.getContentMd5());
-		}catch (IOException e){
-			log.error("error at AmazonS3Manager uploadFile : {}", (Object) e.getStackTrace());
+		} catch (IOException e) {
+			log.error("error at AmazonS3Manager uploadFile : {}", (Object)e.getStackTrace());
 		}
-
 
 		return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
 	}
@@ -42,5 +41,7 @@ public class AmazonS3Manager {
 	public String generatePhotoImageKeyName(Uuid uuid) {
 		return amazonConfig.getPhotoImagePath() + '/' + uuid.getUuid();
 	}
+
+	public String generateReviewImageKeyName(Uuid uuid) {return amazonConfig.getReviewImagePath() + '/' + uuid.getUuid();}
 
 }
