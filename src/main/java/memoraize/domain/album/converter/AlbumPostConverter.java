@@ -20,6 +20,7 @@ public class AlbumPostConverter {
 			.albumAccess(request.getAlbumAccess())
 			.photoImages(new ArrayList<>())
 			.isDeleted(false)
+			.viewCount(0L)
 			.build();
 	}
 
