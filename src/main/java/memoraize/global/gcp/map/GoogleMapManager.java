@@ -3,31 +3,19 @@ package memoraize.global.gcp.map;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.drew.lang.GeoLocation;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
-import com.google.maps.NearbySearchRequest;
-import com.google.maps.PlacesApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
-import com.google.maps.model.PlacesSearchResponse;
-import com.google.maps.model.PlacesSearchResult;
-import com.google.maps.model.PriceLevel;
-import com.google.maps.model.RankBy;
-import com.google.maps.places.v1.AutocompletePlacesRequest;
-import com.google.maps.places.v1.Circle;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import memoraize.global.gcp.GoogleMapConstants;
 import memoraize.global.gcp.map.dto.GooglePlaceApiResponseDTO;
-import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
@@ -36,7 +24,6 @@ public class GoogleMapManager {
 
 	@Value("${cloud.google.map.api-key}")
 	private String apiKey;
-
 
 	public String reverseGeocodingWithGoogleMap(GeoLocation geoLocation) throws
 		IOException,
@@ -50,18 +37,17 @@ public class GoogleMapManager {
 		GeocodingResult[] results = GeocodingApi.reverseGeocode(context, coordinates)
 			.await();
 
-		for(GeocodingResult res : results) {
+		for (GeocodingResult res : results) {
 			log.info(res.formattedAddress);
 		}
 
 		if (results.length > 0) {
 			return results[0].formattedAddress;
-		}
-		else return null;
+		} else
+			return null;
 	}
 
-
-	public String placeSearchWithGoogleMap(GeoLocation geoLocation){
+	public String placeSearchWithGoogleMap(GeoLocation geoLocation) {
 		GeoApiContext context = new GeoApiContext.Builder()
 			.apiKey(apiKey)
 			.build();
@@ -102,7 +88,6 @@ public class GoogleMapManager {
 			+ "  \"languageCode\": \"ko\"\n"
 			+ "}";
 
-
 		GooglePlaceApiResponseDTO result = webClient.post()
 			.uri("https://places.googleapis.com/v1/places:searchNearby")
 			.header("Content-Type", "application/json")
@@ -113,12 +98,13 @@ public class GoogleMapManager {
 			.bodyToMono(GooglePlaceApiResponseDTO.class)
 			.block();
 
-		result.getPlaces().stream().forEach(place ->{
+		result.getPlaces().stream().forEach(place -> {
 			log.info("nearby search => {}", place.getDisplayName().getText());
 		});
 
-		if(result.getPlaces().isEmpty()) return null;
-		return result.getPlaces().getFirst().getDisplayName().getText();
+		if (result.getPlaces().isEmpty())
+			return null;
+		return result.getPlaces().get(0).getDisplayName().getText();
 		/*
 
 		AutocompletePlacesRequest.LocationRestriction locationRestriction = AutocompletePlacesRequest.LocationRestriction.newBuilder()
