@@ -10,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,8 +27,8 @@ public class Place {
 	@Column(name = "place_id")
 	private Long id;
 
-	@NotNull
-	private String name;
+	@Column(name = "place_name", nullable = false)
+	private String placeName;
 
 	@OneToMany(mappedBy = "place", cascade = CascadeType.ALL)
 	private List<Photo> photoList = new ArrayList<>();
@@ -38,11 +37,13 @@ public class Place {
 	private List<Review> reviewList = new ArrayList<>();
 
 	// 연관관계 편의 메서드
-	public void addReview(Review review){
+	public void addReview(Review review) {
 		this.reviewList.add(review);
+		review.setPlace(this);
 	}
 
-	public void addPhoto(Photo photo){
+	public void addPhoto(Photo photo) {
 		this.photoList.add(photo);
+		photo.setPlace(this);
 	}
 }
