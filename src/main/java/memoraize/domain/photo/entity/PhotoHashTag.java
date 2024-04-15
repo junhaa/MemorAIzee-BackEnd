@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import memoraize.domain.photo.enums.TagCategory;
 import memoraize.global.entity.BaseEntity;
 
 @Entity
@@ -33,6 +34,9 @@ public class PhotoHashTag extends BaseEntity {
 
 	@Column(name = "generated_by_ai", nullable = false)
 	private boolean genByAI;
+
+	@Column(name = "photo_hashtag_category", nullable = false)
+	private TagCategory tagCategorie;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "photo_id")
