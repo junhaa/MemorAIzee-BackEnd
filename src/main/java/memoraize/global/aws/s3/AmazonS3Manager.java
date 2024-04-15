@@ -1,6 +1,6 @@
 package memoraize.global.aws.s3;
 
-import java.io.IOException;
+import java.io.ByteArrayInputStream;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,15 +25,16 @@ public class AmazonS3Manager {
 	private final AmazonS3 amazonS3;
 	private final AmazonConfig amazonConfig;
 
-	public String uploadFile(String keyName, MultipartFile file) {
+	// MultipartFile은 한번만 사용 가능
+	public String uploadFile(String keyName, MultipartFile file, byte[] fileBytes) {
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentType(file.getContentType());
 		metadata.setContentLength(file.getSize());
 		try {
-			PutObjectResult putObjectResult = amazonS3.putObject(
-				new PutObjectRequest(amazonConfig.getBucket(), keyName, file.getInputStream(), metadata));
-			log.info("result={}", putObjectResult.getContentMd5());
-		} catch (IOException e) {
+			PutObjectRequest objectRequest = new PutObjectRequest(amazonConfig.getBucket(), keyName,
+				new ByteArrayInputStream(fileBytes), metadata);
+			PutObjectResult putObjectResult = amazonS3.putObject(objectRequest);
+		} catch (Exception e) {
 			log.error("error at AmazonS3Manager uploadFile : {}", (Object)e.getStackTrace());
 			throw new S3FileSaveException(ErrorStatus._S3_FILE_SAVE_ERROR);
 		}

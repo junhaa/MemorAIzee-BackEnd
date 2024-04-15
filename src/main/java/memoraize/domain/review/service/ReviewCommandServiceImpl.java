@@ -1,5 +1,6 @@
 package memoraize.domain.review.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -41,14 +42,23 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 
 	@Override
 	@Transactional
-	public List<ReviewImage> saveReviewImages(List<MultipartFile> request){
+	public List<ReviewImage> saveReviewImages(List<MultipartFile> request) {
 		List<ReviewImage> reviewImages = new ArrayList<>();
 
-		request.stream().forEach(image ->{
+		request.stream().forEach(image -> {
 			String uuid = UUID.randomUUID().toString();
 			Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
 
-			String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateReviewImageKeyName(savedUuid), image);
+			byte[] imageBytes = null;
+			try {
+				imageBytes = image.getBytes();
+			} catch (IOException e) {
+				log.error("imageByte 추출 중 오류 발생");
+				throw new RuntimeException("MultipartFile byte extract error");
+			}
+
+			String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateReviewImageKeyName(savedUuid),
+				image, imageBytes);
 			log.info("S3 Saved Image URL = {}", imageUrl);
 
 			ReviewImage reviewImage = ReviewImage.builder()

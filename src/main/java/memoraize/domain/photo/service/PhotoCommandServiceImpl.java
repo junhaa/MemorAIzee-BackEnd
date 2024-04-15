@@ -58,10 +58,18 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 		List<Photo> photoList = new ArrayList<>();
 
 		for (MultipartFile image : request) {
+			byte[] imageBytes = null;
+			try {
+				imageBytes = image.getBytes();
+			} catch (IOException e) {
+				log.error("imageByte 추출 중 오류 발생");
+				throw new RuntimeException("MultipartFile byte extract error");
+			}
 
 			// 이미지 파일 위치 정보 추출
 			GeoLocation geoLocation = extractLocation(image);
 			log.info("geoLocation = {}", geoLocation);
+
 			// Google Vision API 호출
 
 			// Google map => 위치 호출
@@ -98,7 +106,8 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
 
 			// S3에 이미지 저장
-			String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generatePhotoImageKeyName(savedUuid), image);
+			String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generatePhotoImageKeyName(savedUuid), image,
+				imageBytes);
 			log.info("S3 Saved Image URL = {}", imageUrl);
 			Photo photo = PhotoConverter.toPhoto(imageUrl);
 
