@@ -28,6 +28,9 @@ public class ReviewRestController {
 	private final ReviewCommandService reviewCommandService;
 	private final ReviewQueryService reviewQueryService;
 
+	/**
+	 * 리뷰 추가 API
+	 */
 
 	@PostMapping()
 	public ApiResponse<ReviewResponseDTO.AddReviewResultDTO> addReview(@Valid @ModelAttribute ReviewRequestDTO.createUserReview request){
@@ -35,6 +38,9 @@ public class ReviewRestController {
 		return ApiResponse.onSuccess(ReviewConverter.toAddreviewResultDTO(review));
 	}
 
+	/**
+	 * 유저가 작성한 리뷰 API
+	 */
 	@GetMapping("/{userId}")
 	public ApiResponse getReviews(@Valid @PathVariable Long userId, @RequestParam Integer page, @RequestParam Integer pageCount){
 		ReviewResponseDTO.UserReviewListResultDTO userReviewList = reviewQueryService.getUserReview(userId, page,
