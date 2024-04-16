@@ -19,7 +19,7 @@ public enum ErrorStatus implements BaseCode {
 
 	//S3
 	_S3_FILE_SAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S35001", "S3 파일 저장에 실패했습니다.");
-	_INVALID_SORT_STATUS(HttpStatus.BAD_REQUEST, "ALBUM4003", "정렬 기준이 올바르지 않습니다.");
+
 
 	private final HttpStatus httpStatus;
 	private final String code;
