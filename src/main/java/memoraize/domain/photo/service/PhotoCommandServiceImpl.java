@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -20,9 +22,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.converter.PhotoConverter;
 import memoraize.domain.photo.entity.Photo;
+import memoraize.domain.photo.entity.PhotoHashTag;
 import memoraize.domain.photo.entity.Uuid;
+import memoraize.domain.photo.enums.TagCategory;
 import memoraize.domain.photo.exception.ExtractPlaceException;
-import memoraize.domain.photo.repository.PhotoRepository;
 import memoraize.domain.photo.repository.UuidRepository;
 import memoraize.domain.review.converter.PlaceConverter;
 import memoraize.domain.review.entity.Place;
@@ -40,11 +43,9 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 	private final UuidRepository uuidRepository;
 	private final AmazonS3Manager amazonS3Manager;
-	private final PhotoRepository photoRepository;
-
 	private final PlaceRepository placeRepository;
-
 	private final GoogleMapManager googleMapManager;
+	private final VisionApiService visionApiService;
 
 	/**
 	 * 사진 저장
@@ -71,6 +72,27 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			log.info("geoLocation = {}", geoLocation);
 
 			// Google Vision API 호출
+			try {
+				visionApiService.connect(image);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+			Map<TagCategory, List<String>> resultMap = visionApiService.get
+			Set<TagCategory> categorySet = resultMap.keySet();
+			List<PhotoHashTag> hashTags = new ArrayList<>();
+
+			//해시태그 리스트 생성
+			for (TagCategory category : categorySet) {
+				for (String tag : resultMap.get(category)) {
+					PhotoHashTag photoHashTag = PhotoHashTag.builder()
+						.tagName(tag)
+						.tagCategorie(category)
+						.genByAI(true)
+						.build();
+
+					hashTags.add(photoHashTag);
+				}
+			}
 
 			// Google map => 위치 호출
 
