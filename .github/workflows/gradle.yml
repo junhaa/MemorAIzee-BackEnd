@@ -36,6 +36,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      # 환경 변수 설정
+      - name: Set environment variables
+        run: |
+          export GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      
+
       # application.yml 파일 생성
       - name: make application.yml
         run: |
