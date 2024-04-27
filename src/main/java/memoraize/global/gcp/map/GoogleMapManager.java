@@ -35,6 +35,7 @@ public class GoogleMapManager {
 
 		LatLng coordinates = new LatLng(geoLocation.getLatitude(), geoLocation.getLongitude());
 		GeocodingResult[] results = GeocodingApi.reverseGeocode(context, coordinates)
+			.language("ko")
 			.await();
 
 		for (GeocodingResult res : results) {
@@ -98,12 +99,14 @@ public class GoogleMapManager {
 			.bodyToMono(GooglePlaceApiResponseDTO.class)
 			.block();
 
+		if (result.getPlaces() == null) {
+			return null;
+		}
+
 		result.getPlaces().stream().forEach(place -> {
 			log.info("nearby search => {}", place.getDisplayName().getText());
 		});
 
-		if (result.getPlaces().isEmpty())
-			return null;
 		return result.getPlaces().get(0).getDisplayName().getText();
 		/*
 
