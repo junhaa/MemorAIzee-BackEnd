@@ -11,9 +11,9 @@ import memoraize.domain.photo.enums.TagCategory;
 public interface VisionApiService {
 	Map<TagCategory, List<String>> getResultMap();
 
-	void connect(MultipartFile image) throws IOException;
+	void connect(MultipartFile image, byte[] imageBytes) throws IOException;
 
-	List<String> detectLabel(MultipartFile image) throws IOException;
+	List<String> detectLabel(MultipartFile image, byte[] imageBytes) throws IOException;
 
-	List<String> detectColor(MultipartFile image) throws IOException;
+	List<String> detectColor(MultipartFile image, byte[] imageBytes) throws IOException;
 }

@@ -54,6 +54,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 	 */
 
 	@Override
+	@Transactional
 	public List<Photo> savePhotoImages(List<MultipartFile> request) {
 
 		List<Photo> photoList = new ArrayList<>();
@@ -69,15 +70,15 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 			// 이미지 파일 위치 정보 추출
 			GeoLocation geoLocation = extractLocation(image);
-			log.info("geoLocation = {}", geoLocation);
+			log.info("이미지 위치 메타데이터 = {} // {}", geoLocation.getLatitude(), geoLocation.getLongitude());
 
 			// Google Vision API 호출
 			try {
-				visionApiService.connect(image);
+				visionApiService.connect(image, imageBytes);
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
-			Map<TagCategory, List<String>> resultMap = visionApiService.get
+			Map<TagCategory, List<String>> resultMap = visionApiService.getResultMap();
 			Set<TagCategory> categorySet = resultMap.keySet();
 			List<PhotoHashTag> hashTags = new ArrayList<>();
 
@@ -110,6 +111,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			// 지역 이름 추출에 성공하면
 			Place place = null;
 			if (placeName != null) {
+				log.info("placeName = {}", placeName);
 				Optional<List<Place>> placeList = placeRepository.findByPlaceName(placeName);
 				// 유니크한 값이 아니라면
 				if (placeList.get().size() > 1) {
@@ -120,9 +122,12 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				// 데이터베이스에 존재하지 않는 장소인 경우
 				else {
 					Place newPlace = PlaceConverter.toPlace(placeName);
+					log.info("newPlace.getPlaceName = {}", newPlace.getPlaceName());
 					place = placeRepository.save(newPlace);
 				}
 			}
+
+			log.info("place = {}", place);
 
 			String uuid = UUID.randomUUID().toString();
 			Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());

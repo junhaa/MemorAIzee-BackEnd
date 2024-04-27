@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -23,8 +24,10 @@ import com.google.protobuf.ByteString;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.enums.TagCategory;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @Getter
@@ -42,20 +45,21 @@ public class VisionApiServiceImpl implements VisionApiService {
 	}
 
 	@Override
-	public void connect(MultipartFile image) throws IOException {
+	public void connect(MultipartFile image, byte[] imageBytes) throws IOException {
+		GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
+		log.info(credentials.getQuotaProjectId());
 		resultMap.clear();
-		resultMap.put(TagCategory.LABEL, detectLabel(image));
-		resultMap.put(TagCategory.COLOR, detectColor(image));
+		resultMap.put(TagCategory.LABEL, detectLabel(image, imageBytes));
+		resultMap.put(TagCategory.COLOR, detectColor(image, imageBytes));
 	}
 
 	@Override
-	public List<String> detectLabel(MultipartFile image) throws IOException {
+	public List<String> detectLabel(MultipartFile image, byte[] imageBytes) {
 		ByteString imgBytes = null;
 		List<AnnotateImageRequest> requests = new ArrayList<>();
 		List<String> result = new ArrayList<>();
 
-		byte[] imageData = image.getBytes();
-		imgBytes = ByteString.copyFrom(imageData);
+		imgBytes = ByteString.copyFrom(imageBytes);
 		Image img = Image.newBuilder().setContent(imgBytes).build();
 
 		Feature feat = Feature.newBuilder().setType(Feature.Type.IMAGE_PROPERTIES).build();
@@ -86,6 +90,9 @@ public class VisionApiServiceImpl implements VisionApiService {
 				}
 
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new RuntimeException("이미지 라벨 분석 도중 오류가 발생했습니다.");
 		}
 		for (String st : result) {
 			System.out.println(st);
@@ -95,13 +102,12 @@ public class VisionApiServiceImpl implements VisionApiService {
 	}
 
 	@Override
-	public List<String> detectColor(MultipartFile image) throws IOException {
+	public List<String> detectColor(MultipartFile image, byte[] imageBytes) throws IOException {
 		ByteString imgBytes = null;
 		List<AnnotateImageRequest> requests = new ArrayList<>();
 		List<String> result = new ArrayList<>();
 
-		byte[] imageData = image.getBytes();
-		imgBytes = ByteString.copyFrom(imageData);
+		imgBytes = ByteString.copyFrom(imageBytes);
 		Image img = Image.newBuilder().setContent(imgBytes).build();
 
 		Feature feat = Feature.newBuilder().setType(Feature.Type.IMAGE_PROPERTIES).build();
