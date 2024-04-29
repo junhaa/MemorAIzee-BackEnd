@@ -33,10 +33,8 @@ public class Photo extends BaseEntity {
 	@Column(name = "photo_id")
 	private Long id;
 
-
 	@Column(name = "photo_url", nullable = false)
 	private String imageUrl;
-
 
 	@Column(name = "photo_comment")
 	private String comment;
@@ -53,11 +51,16 @@ public class Photo extends BaseEntity {
 	private Place place;
 
 	// 연관관계 편의 메서드
-	public void setAlbum(Album album){
+	public void setAlbum(Album album) {
 		this.album = album;
 	}
 
-	public void setPlace(Place place){
+	public void setPlace(Place place) {
 		this.place = place;
+	}
+
+	public void addHashTag(PhotoHashTag photoHashTag) {
+		photoHashTagList.add(photoHashTag);
+		photoHashTag.setPhoto(this);
 	}
 }

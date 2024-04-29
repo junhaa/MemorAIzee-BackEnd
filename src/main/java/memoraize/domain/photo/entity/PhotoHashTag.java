@@ -8,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +27,6 @@ public class PhotoHashTag extends BaseEntity {
 	@Column(name = "photo_hashtag_id")
 	private Long Id;
 
-
 	@Column(name = "photo_hashtag_name", nullable = false)
 	private String tagName;
 
@@ -41,4 +39,9 @@ public class PhotoHashTag extends BaseEntity {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "photo_id")
 	private Photo photo;
+
+	// 연관 관계 편의 메서드
+	public void setPhoto(Photo photo) {
+		this.photo = photo;
+	}
 }
