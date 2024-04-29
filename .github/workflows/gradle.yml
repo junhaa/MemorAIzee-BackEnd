@@ -36,12 +36,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # 환경 변수 설정
-      - name: Set environment variables
-        run: |
-          export GOOGLE_APPLICATION_CREDENTIALS=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-      
-
       # application.yml 파일 생성
       - name: make application.yml
         run: |
@@ -72,7 +66,8 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/memoraize:latest
             sudo docker stop $(docker ps -a -q)
-            sudo docker run -d --log-driver=syslog -p 8080:8080 -e SPRING_PROFILES_ACTIVE= ${{ secrets.DOCKER_USERNAME }}/memoraize:latest
+            sudo docker run -d --log-driver=syslog -p 8080:8080 -e GOOGLE_APPLICATION_CREDENTIALS= /app -e SPRING_PROFILES_ACTIVE= ${{ secrets.DOCKER_USERNAME }}/memoraize:latest
             sudo docker rm $(docker ps --filter 'status=exited' -a -q)
             sudo docker image prune -a -f
    
+
