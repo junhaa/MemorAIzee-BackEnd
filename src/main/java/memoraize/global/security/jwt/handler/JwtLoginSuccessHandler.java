@@ -1,4 +1,4 @@
-package memoraize.global.security.oauth;
+package memoraize.global.security.jwt.handler;
 
 import java.io.IOException;
 

@@ -4,6 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 import memoraize.domain.user.entity.User;
 import memoraize.domain.user.enums.LoginType;
+import memoraize.global.security.oauth.userinfo.GoogleOAuth2UserInfo;
+import memoraize.global.security.oauth.userinfo.KakaoOAuth2UserInfo;
+import memoraize.global.security.oauth.userinfo.NaverOAuth2UserInfo;
+import memoraize.global.security.oauth.userinfo.OAuth2UserInfo;
 
 import java.util.ArrayList;
 import java.util.Map;

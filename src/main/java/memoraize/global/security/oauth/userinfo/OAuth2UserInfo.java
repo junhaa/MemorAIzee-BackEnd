@@ -1,4 +1,4 @@
-package memoraize.global.security.oauth;
+package memoraize.global.security.oauth.userinfo;
 
 import java.util.Map;
 

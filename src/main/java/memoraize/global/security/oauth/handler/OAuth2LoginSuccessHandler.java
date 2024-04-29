@@ -1,4 +1,4 @@
-package memoraize.global.security.oauth;
+package memoraize.global.security.oauth.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.user.repository.UserRepository;
-import memoraize.global.security.CustomOAuth2User;
+import memoraize.global.security.oauth.CustomOAuth2User;
 import memoraize.global.security.jwt.JwtService;
 
 import org.springframework.security.core.Authentication;

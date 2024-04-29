@@ -1,6 +1,5 @@
 package memoraize.global.security.oauth;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -20,7 +19,6 @@ import memoraize.domain.user.entity.User;
 import memoraize.domain.user.enums.LoginType;
 import memoraize.domain.user.enums.Role;
 import memoraize.domain.user.repository.UserRepository;
-import memoraize.global.security.CustomOAuth2User;
 
 @Slf4j
 @Service

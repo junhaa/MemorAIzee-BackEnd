@@ -1,6 +1,7 @@
-package memoraize.global.security.oauth;
+package memoraize.global.security.oauth.userinfo;
 
 import java.util.Map;
+
 /**
  * Naver Social Login시 반환되는 Principal
  */

@@ -3,29 +3,16 @@ package memoraize.global.security.config;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.config.oauth2.client.CommonOAuth2Provider;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
-import jakarta.servlet.http.HttpServletRequest;
 import memoraize.domain.user.repository.UserRepository;
 import memoraize.domain.user.service.UserQueryService;
 import memoraize.global.security.LoginService;
@@ -40,22 +27,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import memoraize.global.security.oauth.CustomOAuth2UserService;
-import memoraize.global.security.oauth.JwtLoginFailureHandler;
-import memoraize.global.security.oauth.JwtLoginSuccessHandler;
-import memoraize.global.security.oauth.OAuth2LoginFailureHandler;
-import memoraize.global.security.oauth.OAuth2LoginSuccessHandler;
+import memoraize.global.security.jwt.handler.JwtLoginFailureHandler;
+import memoraize.global.security.jwt.handler.JwtLoginSuccessHandler;
+import memoraize.global.security.oauth.handler.OAuth2LoginFailureHandler;
+import memoraize.global.security.oauth.handler.OAuth2LoginSuccessHandler;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 /**
