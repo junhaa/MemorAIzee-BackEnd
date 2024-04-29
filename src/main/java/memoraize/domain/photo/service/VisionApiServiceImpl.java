@@ -47,7 +47,6 @@ public class VisionApiServiceImpl implements VisionApiService {
 	@Override
 	public void connect(MultipartFile image, byte[] imageBytes) throws IOException {
 		GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
-		log.info(credentials.getQuotaProjectId());
 		resultMap.clear();
 		resultMap.put(TagCategory.LABEL, detectLabel(image, imageBytes));
 		resultMap.put(TagCategory.COLOR, detectColor(image, imageBytes));
