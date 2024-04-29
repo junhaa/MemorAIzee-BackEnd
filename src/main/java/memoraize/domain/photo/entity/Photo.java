@@ -13,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,10 +34,8 @@ public class Photo extends BaseEntity {
 	@Column(name = "photo_id")
 	private Long id;
 
-
 	@Column(name = "photo_url", nullable = false)
 	private String imageUrl;
-
 
 	@Column(name = "photo_comment")
 	private String comment;
@@ -48,16 +47,29 @@ public class Photo extends BaseEntity {
 	@JoinColumn(name = "album_id", nullable = false)
 	private Album album;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "place_id")
+	@OneToOne(mappedBy = "photo", cascade = CascadeType.PERSIST, orphanRemoval = true)
 	private Place place;
 
+	@OneToOne(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Metadata metadata;
+
 	// 연관관계 편의 메서드
-	public void setAlbum(Album album){
+	public void setAlbum(Album album) {
 		this.album = album;
 	}
 
-	public void setPlace(Place place){
+	public void setPlace(Place place) {
 		this.place = place;
+		place.setPhoto(this);
+	}
+
+	public void addHashTag(PhotoHashTag photoHashTag) {
+		photoHashTagList.add(photoHashTag);
+		photoHashTag.setPhoto(this);
+	}
+
+	public void setMetadata(Metadata metadata) {
+		this.metadata = metadata;
+		metadata.setPhoto(this);
 	}
 }

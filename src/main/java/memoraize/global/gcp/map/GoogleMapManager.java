@@ -1,12 +1,12 @@
 package memoraize.global.gcp.map;
 
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.drew.lang.GeoLocation;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
@@ -25,7 +25,7 @@ public class GoogleMapManager {
 	@Value("${cloud.google.map.api-key}")
 	private String apiKey;
 
-	public String reverseGeocodingWithGoogleMap(GeoLocation geoLocation) throws
+	public Optional<String> reverseGeocodingWithGoogleMap(double latitude, double longitude) throws
 		IOException,
 		InterruptedException,
 		ApiException {
@@ -33,8 +33,9 @@ public class GoogleMapManager {
 			.apiKey(apiKey)
 			.build();
 
-		LatLng coordinates = new LatLng(geoLocation.getLatitude(), geoLocation.getLongitude());
+		LatLng coordinates = new LatLng(latitude, longitude);
 		GeocodingResult[] results = GeocodingApi.reverseGeocode(context, coordinates)
+			.language("ko")
 			.await();
 
 		for (GeocodingResult res : results) {
@@ -42,12 +43,12 @@ public class GoogleMapManager {
 		}
 
 		if (results.length > 0) {
-			return results[0].formattedAddress;
+			return Optional.ofNullable(results[0].formattedAddress);
 		} else
-			return null;
+			return Optional.ofNullable(null);
 	}
 
-	public String placeSearchWithGoogleMap(GeoLocation geoLocation) {
+	public Optional<String> placeSearchWithGoogleMap(double longitude, double latitude) {
 		GeoApiContext context = new GeoApiContext.Builder()
 			.apiKey(apiKey)
 			.build();
@@ -80,8 +81,8 @@ public class GoogleMapManager {
 			+ "  \"locationRestriction\": {\n"
 			+ "    \"circle\": {\n"
 			+ "      \"center\": {\n"
-			+ "        \"latitude\": " + geoLocation.getLatitude() + ",\n"
-			+ "        \"longitude\":" + geoLocation.getLongitude() + "},\n"
+			+ "        \"latitude\": " + latitude + ",\n"
+			+ "        \"longitude\":" + longitude + "},\n"
 			+ "      \"radius\": 200.0\n"
 			+ "    }\n"
 			+ "  },\n"
@@ -98,13 +99,15 @@ public class GoogleMapManager {
 			.bodyToMono(GooglePlaceApiResponseDTO.class)
 			.block();
 
+		if (result.getPlaces() == null) {
+			return Optional.ofNullable(null);
+		}
+
 		result.getPlaces().stream().forEach(place -> {
 			log.info("nearby search => {}", place.getDisplayName().getText());
 		});
 
-		if (result.getPlaces().isEmpty())
-			return null;
-		return result.getPlaces().get(0).getDisplayName().getText();
+		return Optional.ofNullable(result.getPlaces().get(0).getDisplayName().getText());
 		/*
 
 		AutocompletePlacesRequest.LocationRestriction locationRestriction = AutocompletePlacesRequest.LocationRestriction.newBuilder()

@@ -1,5 +1,7 @@
 package memoraize.domain.photo.entity;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -7,40 +9,38 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import memoraize.domain.photo.enums.TagCategory;
-import memoraize.global.entity.BaseEntity;
 
 @Entity
-@Getter
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhotoHashTag extends BaseEntity {
-
+public class Metadata {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "photo_hashtag_id")
-	private Long Id;
+	@Column(name = "metadata_id")
+	private Long id;
 
-	@Column(name = "photo_hashtag_name", nullable = false)
-	private String tagName;
+	@Column(name = "metadata_latiitude", nullable = false)
+	private Double latiitude;
 
-	@Column(name = "generated_by_ai", nullable = false)
-	private boolean genByAI;
+	@Column(name = "metadata_longitude", nullable = false)
+	private Double longitude;
 
-	@Column(name = "photo_hashtag_category", nullable = false)
-	private TagCategory tagCategorie;
+	@Column(name = "metadata_date", nullable = false)
+	private Date date;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "photo_id")
 	private Photo photo;
 
 	// 연관 관계 편의 메서드
+
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
 	}

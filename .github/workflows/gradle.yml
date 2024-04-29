@@ -59,6 +59,8 @@ jobs:
 
       - name: Deploy to dev
         uses: appleboy/ssh-action@master
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         with:
           host: ${{ secrets.HOST }}
           username: ubuntu
@@ -66,7 +68,8 @@ jobs:
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/memoraize:latest
             sudo docker stop $(docker ps -a -q)
-            sudo docker run -d --log-driver=syslog -p 8080:8080 -e SPRING_PROFILES_ACTIVE= ${{ secrets.DOCKER_USERNAME }}/memoraize:latest
+            sudo docker run -v /home/ubuntu/credentials:/credentials -d --log-driver=syslog -p 8080:8080 -e GOOGLE_APPLICATION_CREDENTIALS=/credentials/memoraize-419313-0045e89d04b4.json -e SPRING_PROFILES_ACTIVE= ${{ secrets.DOCKER_USERNAME }}/memoraize:latest
             sudo docker rm $(docker ps --filter 'status=exited' -a -q)
             sudo docker image prune -a -f
    
+
