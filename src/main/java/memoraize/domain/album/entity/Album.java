@@ -10,17 +10,23 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import memoraize.domain.album.enums.AlbumAccess;
 import memoraize.domain.photo.entity.Photo;
+import memoraize.domain.user.entity.User;
+import memoraize.domain.user.entity.mapping.AlbumLiked;
 import memoraize.global.entity.BaseEntity;
 
 @Entity
@@ -28,6 +34,7 @@ import memoraize.global.entity.BaseEntity;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Album extends BaseEntity {
 
     @Id
@@ -59,22 +66,23 @@ public class Album extends BaseEntity {
     @Column(name = "isDeleted", nullable = false)
     private Boolean isDeleted;
 
-    //@ManyToOne
-    //private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @Override
-    public String toString() {
-        return "Album{" +
-            "albumId=" + albumId +
-            ", albumName='" + albumName + '\'' +
-            ", albumInfo='" + albumInfo + '\'' +
-            ", photoImages=" + photoImages +
-            ", albumAccess=" + albumAccess +
-            ", isDeleted=" + isDeleted +
-            '}';
+    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
+    private List<AlbumLiked> albumLikedList = new ArrayList<>();
+
+    // 연관 관계 편의 메서드
+    public void addAlbumLiked(AlbumLiked albumLiked){
+        albumLikedList.add(albumLiked);
+        albumLiked.setAlbum(this);
     }
 
-    // 연관관계 편의 메서드
+    public void setUser(User user){
+        this.user = user;
+    }
+
     public void addPhotoImages(List<Photo> photoImages) {
         for (Photo p : photoImages) {
             this.photoImages.add(p);
