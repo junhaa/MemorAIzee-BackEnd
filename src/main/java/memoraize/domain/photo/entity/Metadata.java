@@ -1,9 +1,7 @@
-package memoraize.domain.review.entity;
+package memoraize.domain.photo.entity;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,40 +9,37 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import memoraize.domain.photo.entity.Photo;
 
 @Entity
-@Getter
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Place {
+public class Metadata {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "place_id")
+	@Column(name = "metadata_id")
 	private Long id;
 
-	@Column(name = "place_name", nullable = false)
-	private String placeName;
+	@Column(name = "metadata_latiitude", nullable = false)
+	private Double latiitude;
+
+	@Column(name = "metadata_longitude", nullable = false)
+	private Double longitude;
+
+	@Column(name = "metadata_date", nullable = false)
+	private Date date;
 
 	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "photo_id", nullable = false)
+	@JoinColumn(name = "photo_id")
 	private Photo photo;
 
-	@OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Review> reviewList = new ArrayList<>();
-
-	// 연관관계 편의 메서드
-	public void addReview(Review review) {
-		this.reviewList.add(review);
-		review.setPlace(this);
-	}
+	// 연관 관계 편의 메서드
 
 	public void setPhoto(Photo photo) {
 		this.photo = photo;
