@@ -65,7 +65,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			attributes,
 			extractAttributes.getNameAttributeKey(),
 			createdUser.getLoginId(),
-			createdUser.getAuthorityList().getFirst().getRole()
+			createdUser.getAuthorityList().isEmpty() ? null : createdUser.getAuthorityList().get(0).getRole()
 		);
 	}
 

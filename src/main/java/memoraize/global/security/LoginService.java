@@ -29,7 +29,6 @@ public class LoginService implements UserDetailsService {
 			.orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
 
 		log.info("loadUserByUsername = {}", user);
-		log.info("authority = {}", user.getAuthorityList().getFirst().getRole().toString());
 
 		return org.springframework.security.core.userdetails.User.builder()
 			.username(user.getLoginId())
