@@ -2,7 +2,6 @@ package memoraize.global.security.oauth.handler;
 
 import java.io.IOException;
 
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.stereotype.Component;

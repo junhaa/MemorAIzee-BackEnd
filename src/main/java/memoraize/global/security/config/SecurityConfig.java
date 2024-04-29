@@ -18,10 +18,7 @@ import memoraize.domain.user.service.UserQueryService;
 import memoraize.global.security.LoginService;
 import memoraize.global.security.jwt.JwtService;
 import memoraize.global.security.jwt.filter.CustomUsernamePwdAuthenticationFilter;
-import memoraize.global.security.jwt.filter.JWTTokenGeneratorFilter;
-import memoraize.global.security.jwt.filter.JWTTokenValidatorFilter;
 import memoraize.global.security.jwt.filter.JwtAuthenticationFilter;
-import memoraize.global.security.jwt.filter.RequestValidationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
