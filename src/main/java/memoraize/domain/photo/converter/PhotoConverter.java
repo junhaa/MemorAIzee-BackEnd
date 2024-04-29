@@ -1,5 +1,7 @@
 package memoraize.domain.photo.converter;
 
+import java.util.ArrayList;
+
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.web.dto.PhotoResponseDTO;
 
@@ -16,6 +18,7 @@ public class PhotoConverter {
 		return Photo.builder()
 			.comment(comment)
 			.imageUrl(imageUrl)
+			.photoHashTagList(new ArrayList<>())
 			.build();
 	}
 

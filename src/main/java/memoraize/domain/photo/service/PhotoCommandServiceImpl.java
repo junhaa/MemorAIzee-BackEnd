@@ -138,6 +138,11 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			log.info("S3 Saved Image URL = {}", imageUrl);
 			Photo photo = PhotoConverter.toPhoto(imageUrl);
 
+			// TODO : 비동기 처리 시 어떻게 변경할 것인지
+			for (PhotoHashTag hashTag : hashTags) {
+				photo.addHashTag(hashTag);
+			}
+
 			photo.setPlace(place);
 			// setPlace, place save
 			photoList.add(photo);
