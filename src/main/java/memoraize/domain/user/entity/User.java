@@ -50,6 +50,10 @@ public class User extends BaseEntity {
 	@Column(name = "phone_number", nullable = true)
 	private String phoneNumber;
 
+	@Column(name = "profile_image_url", nullable = true)
+	private String imageUrl;
+
+
 	@Enumerated(EnumType.STRING)
 	@Column(name = "login_type", nullable = false)
 	private LoginType loginType;
