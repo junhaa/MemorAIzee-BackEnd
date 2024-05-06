@@ -20,6 +20,8 @@ public class UserConverter {
 			.albumList(new ArrayList<>())
 			.authorityList(new ArrayList<>())
 			.albumLikedList(new ArrayList<>())
+			.followingList(new ArrayList<>())
+			.followerList(new ArrayList<>())
 			.build();
 	}
 

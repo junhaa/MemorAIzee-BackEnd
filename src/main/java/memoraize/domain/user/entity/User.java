@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.user.entity.mapping.AlbumLiked;
+import memoraize.domain.user.entity.mapping.Follow;
 import memoraize.domain.user.enums.LoginType;
 import memoraize.global.entity.BaseEntity;
 
@@ -62,6 +63,11 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Authority> authorityList = new ArrayList<>();
 
+	@OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Follow> followerList = new ArrayList<>();
+
+	@OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Follow> followingList = new ArrayList<>();
 
 	// 연관 관계 편의 메서드
 
@@ -80,6 +86,27 @@ public class User extends BaseEntity {
 		authority.setUser(this);
 	}
 
+
+	public void addFollower(Follow follower){
+		followerList.add(follower);
+		follower.setFollwer(this);
+	}
+
+	public void addFollowing(Follow following){
+		followingList.add(following);
+		following.setFolloing(this);
+	}
+
+	public void removeFollower(Follow follower){
+		followerList.remove(follower);
+	}
+
+	public void removeFollowing(Follow following){
+		followingList.remove(following);
+	}
+
+
+	// refresh token update
 	public void updateRefreshToken(String refreshToken){
 		this.refreshToken = refreshToken;
 	}

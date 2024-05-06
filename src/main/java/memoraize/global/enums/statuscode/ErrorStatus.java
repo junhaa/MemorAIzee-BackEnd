@@ -2,12 +2,17 @@ package memoraize.global.enums.statuscode;
 
 import org.springframework.http.HttpStatus;
 
+import com.google.api.Http;
+
 public enum ErrorStatus implements BaseCode {
 	// common
 	_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
 	_BAD_REQUEST(HttpStatus.BAD_REQUEST, "COMMON400", "잘못된 요청입니다."),
 	_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "COMMON401", "인증이 필요합니다."),
 	_FORBIDDEN(HttpStatus.FORBIDDEN, "COMMON403", "금지된 요청입니다."),
+
+	// User
+	_USER_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사용자입니다."),
 
 	// Album
 	_PHOTO_IMAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "ALBUM4001", "업로드된 사진이 없습니다."),
