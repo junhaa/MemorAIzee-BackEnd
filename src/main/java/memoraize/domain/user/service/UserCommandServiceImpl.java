@@ -1,5 +1,7 @@
 package memoraize.domain.user.service;
 
+import java.util.List;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,6 +67,11 @@ public class UserCommandServiceImpl implements UserCommandService{
 			follow.getFollowing().removeFollowing(follow);
 			followRepository.delete(follow);
 		});
+	}
+
+	@Override
+	public List<User> getFollowerDetailList(User user){
+		return userRepository.findUsersFollowedBy(user.getId());
 	}
 
 }

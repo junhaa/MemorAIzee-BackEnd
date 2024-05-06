@@ -31,4 +31,13 @@ public class UserConverter {
 			.createdAt(user.getCreatedAt())
 			.build();
 	}
+
+	public static UserResponseDTO.FollowerDetailDTO toFollowerDetailDTO(User user){
+		return UserResponseDTO.FollowerDetailDTO.builder()
+			.user_id(user.getId())
+			.user_name(user.getUserName())
+			.user_introduction(user.getIntroduction() == null ? "사용자 소개가 없습니다." : user.getIntroduction())
+			.user_profile_image_url(user.getImageUrl())
+			.build();
+	}
 }

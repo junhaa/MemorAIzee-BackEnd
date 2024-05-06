@@ -1,5 +1,8 @@
 package memoraize.domain.user.web.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -64,6 +67,16 @@ public class UserRestController {
 	/**
 	 * 팔로워 목록
 	 */
+	@GetMapping("/follow/followers")
+	public ApiResponse<List<UserResponseDTO.FollowerDetailDTO>> followers(@LoginUser User user){
+		List<UserResponseDTO.FollowerDetailDTO> result = userCommandService.getFollowerDetailList(user)
+			.stream()
+			.map(UserConverter::toFollowerDetailDTO)
+			.collect(
+				Collectors.toList());
+
+		return ApiResponse.onSuccess(result);
+	}
 
 
 }
