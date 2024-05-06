@@ -69,11 +69,11 @@ public class SecurityConfig {
 			// CORS
 			.cors(corsCustomizer -> corsCustomizer.configurationSource(request -> {
 				CorsConfiguration config = new CorsConfiguration();
-				config.setAllowedOrigins(Collections.singletonList("*"));
+				config.setAllowedOriginPatterns((Collections.singletonList("*")));
 				config.setAllowedMethods(Collections.singletonList("*"));
 				config.setAllowCredentials(true);
 				config.setAllowedHeaders(Collections.singletonList("*"));
-				config.setExposedHeaders(Arrays.asList("Authorization"));
+				config.setExposedHeaders(Arrays.asList("Authorization, Authorization-refresh"));
 				config.setMaxAge(3600L);
 				return config;
 			}));

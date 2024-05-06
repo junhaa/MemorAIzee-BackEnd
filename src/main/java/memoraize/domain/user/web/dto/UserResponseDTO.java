@@ -14,9 +14,36 @@ public class UserResponseDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	@ToString
-	public static class SignupResponseDTO{
+	public static class SignupResponseDTO {
 		private Long userId;
 		private LocalDateTime createdAt;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@ToString
+	public static class UserDetailDTO {
+		private Long user_id;
+		private String user_name;
+		private String user_introduction;
+		private String user_profile_image_url;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@ToString
+	public static class UserProfileDTO {
+		private Long user_id;
+		private String image_url;
+		private Long album_count;
+		private Long follower_count;
+		private Long following_count;
+		private String user_introduction;
+		private boolean can_follow;
 	}
 
 }

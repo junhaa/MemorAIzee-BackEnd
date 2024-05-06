@@ -16,9 +16,9 @@ import memoraize.domain.photo.repository.UuidRepository;
 import memoraize.domain.review.converter.ReviewConverter;
 import memoraize.domain.review.entity.Review;
 import memoraize.domain.review.entity.ReviewImage;
-import memoraize.domain.review.repository.ReviewImageRepository;
 import memoraize.domain.review.repository.ReviewRepository;
 import memoraize.domain.review.web.dto.ReviewRequestDTO;
+import memoraize.domain.user.entity.User;
 import memoraize.global.aws.s3.AmazonS3Manager;
 
 @Slf4j
@@ -28,16 +28,17 @@ import memoraize.global.aws.s3.AmazonS3Manager;
 public class ReviewCommandServiceImpl implements ReviewCommandService {
 	private final ReviewRepository reviewRepository;
 	private final AmazonS3Manager amazonS3Manager;
-	private final ReviewImageRepository reviewImageRepository;
 	private final UuidRepository uuidRepository;
 
 	@Override
 	@Transactional
-	public Review addReview(ReviewRequestDTO.createUserReview request) {
+	public Review addReview(ReviewRequestDTO.createUserReview request, User user) {
 		Review review = ReviewConverter.toReview(request);
 		review.addReviewImages(saveReviewImages(request.getImages()));
-		//google review 추가 메소드
-		return reviewRepository.save(review);
+		reviewRepository.save(review);
+		user.addReview(review);
+
+		return review;
 	}
 
 	@Override

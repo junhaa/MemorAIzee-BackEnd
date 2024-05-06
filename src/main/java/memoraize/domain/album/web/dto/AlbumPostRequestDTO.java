@@ -19,7 +19,6 @@ public class AlbumPostRequestDTO {
 	public static class addAlbumPostDTO {
 		private String albumName;
 		private String albumInfo;
-		//private User user;
 		@ListNotBlank
 		private List<MultipartFile> images;
 		private AlbumAccess albumAccess;
