@@ -44,12 +44,17 @@ public class User extends BaseEntity {
 	@Column(name = "user_name", nullable = false)
 	private String userName;
 
+	@Column(name = "user_introduction")
+	private String introduction;
+
 	@Column(name = "phone_number", nullable = true)
 	private String phoneNumber;
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "login_type", nullable = false)
 	private LoginType loginType;
+
+
 
 	@Column(name = "refresh_token")
 	private String refreshToken;
