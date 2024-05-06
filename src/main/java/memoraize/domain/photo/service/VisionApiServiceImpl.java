@@ -36,7 +36,7 @@ public class VisionApiServiceImpl implements VisionApiService {
 	@Value("${cloud.google.vision-api.number-of-label}")
 	private int numberOfLable;
 
-	@Value("${cloud.google.vision-api.number-of-label}")
+	@Value("${cloud.google.vision-api.number-of-property}")
 	private int numberOfProperties;
 
 	@Override
