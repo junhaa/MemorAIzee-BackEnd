@@ -10,5 +10,4 @@ public interface UserCommandService {
 	void addUserFollower(User followingUser, Long followerUserId);
 	void removeUserFollower(User followingUser, Long followerUserId);
 
-	List<User> getFollowerDetailList(User user);
 }

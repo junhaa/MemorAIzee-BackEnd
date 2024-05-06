@@ -11,5 +11,9 @@ import memoraize.domain.user.entity.mapping.Follow;
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 	boolean existsByFollowerIdAndFollowingId(Long followerId, Long followingId);
 
+	Long countByFollowerId(Long followerId);
+
+	Long countByFollowingId(Long followingId);
+
 	Optional<Follow> findByFollowerIdAndFollowingId(Long followerId, Long followingId);
 }

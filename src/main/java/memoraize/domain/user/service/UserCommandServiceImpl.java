@@ -69,9 +69,6 @@ public class UserCommandServiceImpl implements UserCommandService{
 		});
 	}
 
-	@Override
-	public List<User> getFollowerDetailList(User user){
-		return userRepository.findUsersFollowedBy(user.getId());
-	}
+
 
 }

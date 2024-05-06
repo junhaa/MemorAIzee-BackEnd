@@ -43,4 +43,9 @@ public class AlbumPostQueryServiceImpl implements AlbumPostQueryService {
 		result = albumPostRepository.findAll(pageable);
 		return AlbumPostConverter.toAlbumPostPreviewResultPageDTO(result);
 	}
+
+	@Override
+	public Long getAlbumCount(Long userId) {
+		return albumPostRepository.countByUserId(userId);
+	}
 }

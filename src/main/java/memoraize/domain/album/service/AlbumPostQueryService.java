@@ -5,5 +5,7 @@ import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
 
 public interface AlbumPostQueryService {
 	AlbumPostResponseDTO.AlbumPostPreviewResultPageDTO getAlbumPage(AlbumPostRequestDTO.getAlbumPostPageDTO request);
+
+	Long getAlbumCount(Long userId);
 }
 
