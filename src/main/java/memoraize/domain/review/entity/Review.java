@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import memoraize.domain.photo.entity.Photo;
+import memoraize.domain.user.entity.User;
 import memoraize.global.entity.BaseEntity;
 
 @Entity
@@ -60,19 +60,27 @@ public class Review extends BaseEntity {
 	@JoinColumn(name = "place_id")
 	private Place place;
 
-	public void setGoogleUrl(String url){
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
+
+	public void setGoogleUrl(String url) {
 		review_url = url;
 	}
 
 	// 연관 관계 편의 메서드
-	public void addReviewImages(List<ReviewImage> reviewImageList){
+	public void addReviewImages(List<ReviewImage> reviewImageList) {
 		reviewImageList.stream().forEach(image -> {
 			this.reviewImages.add(image);
 			image.setReview(this);
 		});
 	}
 
-	public void setPlace(Place place){
+	public void setPlace(Place place) {
 		this.place = place;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }
