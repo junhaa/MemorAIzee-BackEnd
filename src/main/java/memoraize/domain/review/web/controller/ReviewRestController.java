@@ -42,6 +42,18 @@ public class ReviewRestController {
 	}
 
 	/**
+	 * 앨범 내부 사진을 이용한 리뷰 추가 API
+	 */
+	@PostMapping("/{photoId}")
+	public ApiResponse<ReviewResponseDTO.AddReviewResultDTO> addReviewWithPhoto(
+		@Valid @ModelAttribute ReviewRequestDTO.createUserReview request,
+		@PathVariable Long photoId,
+		@LoginUser User user) {
+		Review review = reviewCommandService.addReviewWithPhotoId(request, user, photoId);
+		return ApiResponse.onSuccess(ReviewConverter.toAddreviewResultDTO(review));
+	}
+
+	/**
 	 * 유저가 작성한 리뷰 API
 	 */
 	@GetMapping("/{userId}")

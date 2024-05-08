@@ -18,6 +18,10 @@ public enum ErrorStatus implements BaseCode {
 	_PAGE_NOT_NEGATIVE(HttpStatus.BAD_REQUEST, "ALBUM4002", "page번호나 pageCount는 음수일 수 없습니다."),
 	_INVALID_SORT_STATUS(HttpStatus.BAD_REQUEST, "ALBUM4003", "정렬 기준이 올바르지 않습니다."),
 
+	//Photo
+	_PHOTO_NOT_EXIST(HttpStatus.BAD_REQUEST, "PHOTO4001", "존재하지 않는 사진입니다."),
+	_METADATA_NOT_EXIST(HttpStatus.BAD_REQUEST, "PHOTO4002", "메타데이터가 존재하지 않는 사진입니다."),
+
 	// Place
 	_PLACE_FETCH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PLACE5001", "장소에 중복되는 값이 있습니다."),
 	_PLACE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PLACE4001", "존재하지 않는 장소입니다."),
