@@ -115,4 +115,16 @@ public class UserRestController {
 		return ApiResponse.onSuccess(result);
 	}
 
+	@GetMapping("/profile")
+	public ApiResponse<UserResponseDTO.UserProfileDTO> profile(@LoginUser User user) {
+		Long albumCount = albumPostQueryService.getAlbumCount(user.getId());
+		Long followerCount = userQueryService.getFollowerCount(user.getId());
+		Long followingCount = userQueryService.getFollowingCount(user.getId());
+		User desUser = userQueryService.getUserById(user.getId());
+		boolean canFollow = false;
+		UserResponseDTO.UserProfileDTO result = UserConverter.toUserProfileDTO(desUser, followerCount, followingCount,
+			albumCount, canFollow);
+		return ApiResponse.onSuccess(result);
+	}
+
 }
