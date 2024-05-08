@@ -47,7 +47,8 @@ public class Photo extends BaseEntity {
 	@JoinColumn(name = "album_id", nullable = false)
 	private Album album;
 
-	@OneToOne(mappedBy = "photo", cascade = CascadeType.PERSIST, orphanRemoval = true)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "place_id")
 	private Place place;
 
 	@OneToOne(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -60,7 +61,6 @@ public class Photo extends BaseEntity {
 
 	public void setPlace(Place place) {
 		this.place = place;
-		place.setPhoto(this);
 	}
 
 	public void addHashTag(PhotoHashTag photoHashTag) {

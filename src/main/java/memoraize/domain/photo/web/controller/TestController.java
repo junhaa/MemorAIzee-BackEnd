@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +17,6 @@ import memoraize.global.response.ApiResponse;
 
 /**
  * 사진 저장 테스트용
- *
  */
 @Slf4j
 @RestController
@@ -28,7 +26,7 @@ public class TestController {
 
 	private final PhotoCommandService photoCommandService;
 
-	@PostMapping("/photo")
+	// @PostMapping("/photo")
 	public ApiResponse<List<Photo>> savePhoto(
 		@Valid @ModelAttribute List<MultipartFile> request) throws IOException {//http응답으로 들어온 객체를 request에 저장
 		log.info("request = {}", request);
@@ -39,9 +37,10 @@ public class TestController {
 			System.out.println(image.getOriginalFilename());
 			//System.out.println(Arrays.toString(image.getBytes()));
 		}
-		List<Photo> photos = photoCommandService.savePhotoImages(request);//이 부분을 내가 구현한다.
+		// List<Photo> photos = photoCommandService.savePhotoImages(request);//이 부분을 내가 구현한다.
 		//결과에 해당하는 DTO도 제작한다
 		//request.getPhotoImages()<-rombok 어노테이션이 만들어준 getter
-		return ApiResponse.onSuccess(photos);//<-
+		// return ApiResponse.onSuccess(photos);//<-
+		return null;
 	}
 }

@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import memoraize.domain.photo.entity.Photo;
+import memoraize.domain.album.entity.Album;
 
 public interface PhotoCommandService {
-	List<Photo> savePhotoImages(List<MultipartFile> request);
+	void savePhotoImages(List<MultipartFile> request, Album album);
 }

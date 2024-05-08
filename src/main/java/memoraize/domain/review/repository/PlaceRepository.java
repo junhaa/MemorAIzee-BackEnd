@@ -1,6 +1,5 @@
 package memoraize.domain.review.repository;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import memoraize.domain.review.entity.Place;
 
 public interface PlaceRepository extends JpaRepository<Place, Long> {
-	Optional<List<Place>> findByPlaceName(String placeName);
+	Optional<Place> findByPlaceName(String placeName);
 }
