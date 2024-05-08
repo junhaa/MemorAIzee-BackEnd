@@ -14,6 +14,7 @@ import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.service.PhotoCommandService;
+import memoraize.domain.user.entity.User;
 
 @Slf4j
 @Service
@@ -26,8 +27,9 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 
 	@Override
 	@Transactional
-	public AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbum(AlbumPostRequestDTO.addAlbumPostDTO request) {
+	public AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbum(AlbumPostRequestDTO.addAlbumPostDTO request, User user) {
 		Album albumPost = AlbumPostConverter.toAlbumPost(request);
+		user.addAlbum(albumPost);
 		List<Photo> photoList = photoCommandService.savePhotoImages(request.getImages());
 		albumPost.addPhotoImages(photoList);
 

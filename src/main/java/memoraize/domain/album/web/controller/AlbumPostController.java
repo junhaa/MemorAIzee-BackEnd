@@ -13,6 +13,8 @@ import memoraize.domain.album.service.AlbumPostCommandService;
 import memoraize.domain.album.service.AlbumPostQueryService;
 import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
+import memoraize.domain.user.entity.User;
+import memoraize.global.annotation.LoginUser;
 import memoraize.global.response.ApiResponse;
 
 @Slf4j
@@ -25,8 +27,9 @@ public class AlbumPostController {
 
 	@PostMapping("")
 	public ApiResponse<AlbumPostResponseDTO.AddAlbumPostResultDTO> addAlbum(
-		@Valid @ModelAttribute AlbumPostRequestDTO.addAlbumPostDTO request) {
-		AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbumPostResultDTO = albumPostCommandService.addAlbum(request);
+		@Valid @ModelAttribute AlbumPostRequestDTO.addAlbumPostDTO request, @LoginUser User user) {
+		AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbumPostResultDTO = albumPostCommandService.addAlbum(request,
+			user);
 		return ApiResponse.onSuccess(addAlbumPostResultDTO);
 	}
 
