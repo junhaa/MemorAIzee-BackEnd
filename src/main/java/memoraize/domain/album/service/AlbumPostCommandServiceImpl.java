@@ -1,7 +1,5 @@
 package memoraize.domain.album.service;
 
-import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +10,6 @@ import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.repository.AlbumPostRepository;
 import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
-import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.service.PhotoCommandService;
 import memoraize.domain.user.entity.User;
 
@@ -30,13 +27,12 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 	public AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbum(AlbumPostRequestDTO.addAlbumPostDTO request, User user) {
 		Album albumPost = AlbumPostConverter.toAlbumPost(request);
 		user.addAlbum(albumPost);
-		List<Photo> photoList = photoCommandService.savePhotoImages(request.getImages());
-		albumPost.addPhotoImages(photoList);
+		albumPostRepository.save(albumPost);
+		photoCommandService.savePhotoImages(request.getImages(), albumPost);
 
 		// 앨범 추가 기능
 
-		Album savedAlbum = albumPostRepository.save(albumPost);
-		return AlbumPostConverter.toAddAlbumPostResultDTO(savedAlbum);
+		return AlbumPostConverter.toAddAlbumPostResultDTO(albumPost);
 	}
 
 }
