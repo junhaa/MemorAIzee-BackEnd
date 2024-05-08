@@ -43,11 +43,11 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 	@Override
 	@Transactional
 	public Review addReview(ReviewRequestDTO.createUserReview request, User user) {
+		Place place = placeRepository.findById(request.getPlaceId()).orElseThrow(() -> new PlaceNotExistException());
 		Review review = ReviewConverter.toReview(request);
 		review.addReviewImages(saveReviewImages(request.getImages()));
 		reviewRepository.save(review);
 		user.addReview(review);
-		Place place = placeRepository.findById(request.getPlaceId()).orElseThrow(() -> new PlaceNotExistException());
 		place.addReview(review);
 
 		return review;
@@ -66,7 +66,7 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 		ReviewImage reviewImage = ReviewImage.builder()
 			.imageUrl(photo.getImageUrl())
 			.build();
-		reviewImageList.addFirst(reviewImage);
+		reviewImageList.add(0, reviewImage);
 		review.addReviewImages(reviewImageList);
 		reviewRepository.save(review);
 		user.addReview(review);

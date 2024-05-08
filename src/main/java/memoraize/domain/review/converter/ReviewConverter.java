@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 
 import memoraize.domain.review.entity.Review;
+import memoraize.domain.review.entity.ReviewImage;
 import memoraize.domain.review.web.dto.ReviewRequestDTO;
 import memoraize.domain.review.web.dto.ReviewResponseDTO;
+import memoraize.domain.user.entity.User;
 
 public class ReviewConverter {
 	public static Review toReview(ReviewRequestDTO.createUserReview request) {
@@ -44,12 +46,21 @@ public class ReviewConverter {
 	}
 
 	public static ReviewResponseDTO.ReviewQueryResultDTO toReviewQueryResultDTO(Review review) {
+		User user = review.getUser();
+
 		return ReviewResponseDTO.ReviewQueryResultDTO.builder()
+			.writer(
+				ReviewResponseDTO.UserDetailDTO.builder()
+					.userid(user.getId())
+					.user_image_url(user.getImageUrl())
+					.user_name(user.getUserName())
+					.build()
+			)
 			.reviewId(review.getId())
 			.star(review.getStar())
 			.viewCount(review.getViewCount())
 			.content(review.getContext())
-			.reviewURL(review.getReview_url())
+			.reviewImages(review.getReviewImages().stream().map(ReviewImage::getImageUrl).collect(Collectors.toList()))
 			.build();
 	}
 

@@ -11,6 +11,7 @@ import memoraize.domain.album.enums.AlbumAccess;
 import memoraize.domain.album.enums.SortStatus;
 import memoraize.domain.album.validation.annotation.ListNotBlank;
 import memoraize.domain.album.validation.annotation.NonNegative;
+import memoraize.domain.review.validation.annotation.Pageable;
 
 public class AlbumPostRequestDTO {
 
@@ -32,10 +33,12 @@ public class AlbumPostRequestDTO {
 		@NotNull(message = "정렬 기준은 필수입니다.")
 		private SortStatus sortStatus;
 
+		@Pageable
 		@NonNegative
 		@NotNull(message = "page값은 필수입니다.")
 		private Integer page;
 
+		@Pageable
 		@NonNegative
 		@NotNull(message = "albumCount값은 필수입니다.")
 		private Integer albumCount;

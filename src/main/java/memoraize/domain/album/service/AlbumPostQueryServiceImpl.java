@@ -35,7 +35,7 @@ public class AlbumPostQueryServiceImpl implements AlbumPostQueryService {
 		} else {
 			throw new InvalidSortStatusException(ErrorStatus._INVALID_SORT_STATUS);
 		}
-		Pageable pageable = PageRequest.of(request.getPage(), request.getAlbumCount(), sort);
+		Pageable pageable = PageRequest.of(request.getPage() - 1, request.getAlbumCount(), sort);
 		Page<Album> result;
 
 		// TODO 앨범 공개 범위별로

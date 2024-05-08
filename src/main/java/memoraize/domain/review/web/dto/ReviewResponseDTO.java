@@ -23,7 +23,7 @@ public class ReviewResponseDTO {
 	@Getter
 	@NoArgsConstructor
 	@AllArgsConstructor
-	public static class UserReviewListResultDTO{
+	public static class UserReviewListResultDTO {
 		List<ReviewQueryResultDTO> reviewList;
 		Integer listSize;
 		Integer totalPage;
@@ -37,14 +37,22 @@ public class ReviewResponseDTO {
 	@NoArgsConstructor
 	@AllArgsConstructor
 	public static class ReviewQueryResultDTO {
-		// User writer;
-
-		// Place place;
+		UserDetailDTO writer;
 		Long reviewId;
 		Float star;
 		Long viewCount;
 		String content;
-		String reviewURL;
+		List<String> reviewImages;
+	}
+
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class UserDetailDTO {
+		private Long userid;
+		private String user_name;
+		private String user_image_url;
 	}
 
 }
