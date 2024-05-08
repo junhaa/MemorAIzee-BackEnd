@@ -1,12 +1,11 @@
 package memoraize.domain.review.web.dto;
 
-
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.NotBlank;
-
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -15,7 +14,7 @@ import lombok.Setter;
 public class ReviewRequestDTO {
 	@Getter
 	@Setter
-	public static class createUserReview{
+	public static class createUserReview {
 
 		@Size(max = 50)
 		@NotBlank
@@ -31,8 +30,7 @@ public class ReviewRequestDTO {
 		// 소수점 한자리인지 검증
 		private Float star; // 별점
 
-		private List<MultipartFile> images; // 리뷰 사진
+		private List<MultipartFile> images = new ArrayList<>(); // 리뷰 사진
 	}
-
 
 }

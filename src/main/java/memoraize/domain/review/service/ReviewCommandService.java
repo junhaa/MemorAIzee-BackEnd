@@ -13,4 +13,6 @@ public interface ReviewCommandService {
 	Review addReview(ReviewRequestDTO.createUserReview request, User user);
 
 	List<ReviewImage> saveReviewImages(List<MultipartFile> request);
+
+	Review addReviewWithPhotoId(ReviewRequestDTO.createUserReview request, User user, Long photoId);
 }

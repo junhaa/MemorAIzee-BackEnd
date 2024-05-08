@@ -49,10 +49,6 @@ public class Review extends BaseEntity {
 	@Column(name = "review_view_count", nullable = false)
 	private Long viewCount;
 
-	// @ManyToOne(fetch = FetchType.LAZY)
-	// @JoinColumn(name = "user_id", nullable = false)
-	// private User user;
-
 	@OneToMany(mappedBy = "review", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<ReviewImage> reviewImages = new ArrayList<>();
 
