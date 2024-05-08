@@ -12,10 +12,13 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.entity.Uuid;
+import memoraize.domain.photo.exception.PlaceNotExistException;
 import memoraize.domain.photo.repository.UuidRepository;
 import memoraize.domain.review.converter.ReviewConverter;
+import memoraize.domain.review.entity.Place;
 import memoraize.domain.review.entity.Review;
 import memoraize.domain.review.entity.ReviewImage;
+import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.domain.review.repository.ReviewRepository;
 import memoraize.domain.review.web.dto.ReviewRequestDTO;
 import memoraize.domain.user.entity.User;
@@ -27,6 +30,8 @@ import memoraize.global.aws.s3.AmazonS3Manager;
 @Transactional(readOnly = true)
 public class ReviewCommandServiceImpl implements ReviewCommandService {
 	private final ReviewRepository reviewRepository;
+	private final PlaceRepository placeRepository;
+
 	private final AmazonS3Manager amazonS3Manager;
 	private final UuidRepository uuidRepository;
 
@@ -37,6 +42,8 @@ public class ReviewCommandServiceImpl implements ReviewCommandService {
 		review.addReviewImages(saveReviewImages(request.getImages()));
 		reviewRepository.save(review);
 		user.addReview(review);
+		Place place = placeRepository.findById(request.getPlaceId()).orElseThrow(() -> new PlaceNotExistException());
+		place.addReview(review);
 
 		return review;
 	}

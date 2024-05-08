@@ -20,6 +20,7 @@ public enum ErrorStatus implements BaseCode {
 
 	// Place
 	_PLACE_FETCH_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "PLACE5001", "장소에 중복되는 값이 있습니다."),
+	_PLACE_NOT_EXIST(HttpStatus.BAD_REQUEST, "PLACE4001", "존재하지 않는 장소입니다."),
 
 	//S3
 	_S3_FILE_SAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S35001", "S3 파일 저장에 실패했습니다.");
