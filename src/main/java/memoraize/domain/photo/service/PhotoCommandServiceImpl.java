@@ -31,7 +31,6 @@ import memoraize.domain.photo.exception.ExtractPlaceException;
 import memoraize.domain.photo.repository.UuidRepository;
 import memoraize.domain.review.converter.PlaceConverter;
 import memoraize.domain.review.entity.Place;
-import memoraize.domain.review.exception.PlaceFetchException;
 import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.global.aws.s3.AmazonS3Manager;
 import memoraize.global.enums.statuscode.ErrorStatus;
@@ -99,25 +98,16 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				placeName.ifPresent(pname -> {
 					// 지역 이름 추출에 성공하면
 					log.info("placeName = {}", pname);
-					Optional<List<Place>> placeList = placeRepository.findByPlaceName(pname);
 
-					Place place = null;
-					// 유니크한 값이 아니라면
-					if (placeList.get().size() > 1) {
-						throw new PlaceFetchException(ErrorStatus._PLACE_FETCH_ERROR);
-					} else if (placeList.get().size() == 1) {
-						place = placeList.get().get(0);
+					Place place;
+					Optional<Place> placeOptional = placeRepository.findByPlaceName(pname);
+					if (placeOptional.isPresent()) {
+						place = placeOptional.get();
+					} else {
+						place = PlaceConverter.toPlace(pname);
 					}
-					// 데이터베이스에 존재하지 않는 장소인 경우
-					else {
-						Place newPlace = PlaceConverter.toPlace(pname);
-						log.info("newPlace.getPlaceName = {}", newPlace.getPlaceName());
-						place = newPlace;
-					}
-					if (place != null) {
-						log.info("place => {}", place);
-						photo.setPlace(place);
-					}
+					log.info("place => {}", place);
+					place.addPhoto(photo);
 				});
 				photo.setMetadata(data);
 			});
