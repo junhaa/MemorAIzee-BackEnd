@@ -2,8 +2,6 @@ package memoraize.global.enums.statuscode;
 
 import org.springframework.http.HttpStatus;
 
-import com.google.api.Http;
-
 public enum ErrorStatus implements BaseCode {
 	// common
 	_INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "COMMON500", "서버 에러, 관리자에게 문의 바랍니다."),
@@ -13,6 +11,7 @@ public enum ErrorStatus implements BaseCode {
 
 	// User
 	_USER_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사용자입니다."),
+	_EXIST_LOGINID(HttpStatus.BAD_REQUEST, "USER4002", "이미 존재하는 로그인 ID 입니다."),
 
 	// Album
 	_PHOTO_IMAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "ALBUM4001", "업로드된 사진이 없습니다."),
@@ -24,7 +23,6 @@ public enum ErrorStatus implements BaseCode {
 
 	//S3
 	_S3_FILE_SAVE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S35001", "S3 파일 저장에 실패했습니다.");
-
 
 	private final HttpStatus httpStatus;
 	private final String code;

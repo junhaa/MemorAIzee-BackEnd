@@ -21,6 +21,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 	Optional<User> findByLoginTypeAndLoginId(LoginType loginType, String LoginId);
 
+	boolean existsByLoginIdAndLoginType(String loginId, LoginType loginType);
+
 	@Query("SELECT u\n"
 		+ "FROM User u\n"
 		+ "WHERE u.id IN (\n"

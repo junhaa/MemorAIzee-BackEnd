@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +40,7 @@ public class UserRestController {
 	 */
 	@PostMapping("/signup")
 	public ApiResponse<UserResponseDTO.SignupResponseDTO> signup(
-		@Valid @RequestBody UserRequestDTO.SignupRequestDTO request, HttpServletResponse response) {
+		@Valid @RequestBody UserRequestDTO.SignupRequestDTO request) {
 		log.info("request = {}", request);
 		User user = userCommandService.join(request);
 		return ApiResponse.onSuccess(UserConverter.toSignupResponseDTO(user));
