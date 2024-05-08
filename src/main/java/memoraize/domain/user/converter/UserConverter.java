@@ -45,6 +45,7 @@ public class UserConverter {
 		Long albumCount, boolean canFollow) {
 		return UserResponseDTO.UserProfileDTO.builder()
 			.user_id(desUser.getId())
+			.user_name(desUser.getUserName())
 			.user_introduction(desUser.getIntroduction() == null ? "사용자 소개가 없습니다." : desUser.getIntroduction())
 			.image_url(desUser.getImageUrl())
 			.follower_count(followerCount)

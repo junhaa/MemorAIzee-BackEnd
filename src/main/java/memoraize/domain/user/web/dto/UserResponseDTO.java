@@ -38,6 +38,7 @@ public class UserResponseDTO {
 	@ToString
 	public static class UserProfileDTO {
 		private Long user_id;
+		private String user_name;
 		private String image_url;
 		private Long album_count;
 		private Long follower_count;
