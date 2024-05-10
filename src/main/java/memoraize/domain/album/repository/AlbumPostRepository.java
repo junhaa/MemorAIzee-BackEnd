@@ -9,5 +9,7 @@ import memoraize.domain.album.entity.Album;
 public interface AlbumPostRepository extends JpaRepository<Album, Long> {
 	Page<Album> findAll(Pageable pageable);
 
+	Page<Album> findByUserId(Long userId, Pageable pageable);
+
 	Long countByUserId(Long userId);
 }
