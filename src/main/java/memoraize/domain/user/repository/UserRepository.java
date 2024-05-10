@@ -41,4 +41,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 		+ ")")
 	List<User> findUsersFollowingBy(@Param("userId") Long userId);
 
+	Optional<List<User>> findByUserName(String userName);
 }
