@@ -8,4 +8,6 @@ public interface AlbumPostCommandService {
 
 	AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbum(AlbumPostRequestDTO.addAlbumPostDTO request, User user);
 
+	void deleteAlbum(User user, Long albumId);
+
 }
