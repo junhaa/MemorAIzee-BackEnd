@@ -1,6 +1,7 @@
 package memoraize.domain.album.web.controller;
 
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -72,6 +73,12 @@ public class AlbumPostRestController {
 		AlbumPostResponseDTO.AlbumPostPreviewResultPageDTO result = AlbumPostConverter.toAlbumPostPreviewResultPageDTO(
 			userAlbumPage);
 		return ApiResponse.onSuccess(result);
+	}
+
+	@DeleteMapping("/{albumId}")
+	public ApiResponse<?> deleteAlbum(@PathVariable(name = "albumId") Long albumId, @LoginUser User user) {
+		albumPostCommandService.deleteAlbum(user, albumId);
+		return ApiResponse.onSuccess("성공적으로 앨범을 삭제했습니다.");
 	}
 
 }

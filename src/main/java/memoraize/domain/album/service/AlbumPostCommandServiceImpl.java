@@ -12,6 +12,8 @@ import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
 import memoraize.domain.photo.service.PhotoCommandService;
 import memoraize.domain.user.entity.User;
+import memoraize.global.enums.statuscode.ErrorStatus;
+import memoraize.global.exception.GeneralException;
 
 @Slf4j
 @Service
@@ -33,6 +35,19 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		// 앨범 추가 기능
 
 		return AlbumPostConverter.toAddAlbumPostResultDTO(albumPost);
+	}
+
+	@Override
+	@Transactional
+	public void deleteAlbum(User user, Long albumId) {
+		Album album = albumPostRepository.findById(albumId)
+			.orElseThrow(() -> new GeneralException(ErrorStatus._ALBUM_NOT_EXIST));
+
+		if (album.getUser().getId() != user.getId()) {
+			throw new GeneralException(ErrorStatus._ALBUM_FORBIDEN);
+		}
+
+		albumPostRepository.deleteById(albumId);
 	}
 
 }

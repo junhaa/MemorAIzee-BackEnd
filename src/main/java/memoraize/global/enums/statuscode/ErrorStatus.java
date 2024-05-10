@@ -19,6 +19,8 @@ public enum ErrorStatus implements BaseCode {
 	_PHOTO_IMAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "ALBUM4001", "업로드된 사진이 없습니다."),
 	_PAGE_NOT_NEGATIVE(HttpStatus.BAD_REQUEST, "ALBUM4002", "page번호나 pageCount는 음수일 수 없습니다."),
 	_INVALID_SORT_STATUS(HttpStatus.BAD_REQUEST, "ALBUM4003", "정렬 기준이 올바르지 않습니다."),
+	_ALBUM_FORBIDEN(HttpStatus.FORBIDDEN, "ALBUM4004", "앨범에 대한 접근 권한이 없습니다."),
+	_ALBUM_NOT_EXIST(HttpStatus.BAD_REQUEST, "ALBUM4005", "존재하지 않는 앨범입니다."),
 
 	//Photo
 	_PHOTO_NOT_EXIST(HttpStatus.BAD_REQUEST, "PHOTO4001", "존재하지 않는 사진입니다."),
