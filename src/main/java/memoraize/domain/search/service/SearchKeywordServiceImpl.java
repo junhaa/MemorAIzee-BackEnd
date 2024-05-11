@@ -34,7 +34,7 @@ public class SearchKeywordServiceImpl implements SearchKeywordService{
 
         Optional<List<Album>> resultAlbumList = albumPostRepository.findByAlbumName(keyword.getKeyword());
         Optional<List<User>> resultUserList = userRepository.findByUserName(keyword.getKeyword());
-        Optional<List<Place>> resultPlaceList = placeRepository.findByPlaceName(keyword.getKeyword());
+        Optional<List<Place>> resultPlaceList = placeRepository.findAllByPlaceName(keyword.getKeyword());
         Optional<List<Review>> resultReviewList = reviewRepository.findByReviewTitle(keyword.getKeyword());
 
         List<SearchKeywordResponseDTO.SearchUserInfoDTO> userInfoDTOList = new ArrayList<>();
