@@ -1,5 +1,6 @@
 package memoraize.domain.album.service;
 
+import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
 import memoraize.domain.user.entity.User;
@@ -13,5 +14,7 @@ public interface AlbumPostCommandService {
 	void unlikeAlbum(User user, Long albumId);
 
 	void likeAlbum(User user, Long albumId);
+
+	void increseViewCount(Album album);
 
 }

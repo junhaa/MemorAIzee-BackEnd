@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import memoraize.domain.photo.web.dto.PhotoResponseDTO;
 
 public class AlbumPostResponseDTO {
 	@Builder
@@ -44,4 +45,17 @@ public class AlbumPostResponseDTO {
 		// TODO HashTag 추가 및 앨범 URL 추가
 	}
 
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	public static class AlbumDetailResponseDTO {
+		private Long album_id;
+		private String album_title;
+		private String album_info;
+		private Long view_count;
+		private Long photo_count;
+		private LocalDateTime created_at;
+		List<PhotoResponseDTO.PhotoPreviewDTO> photo_list;
+	}
 }
