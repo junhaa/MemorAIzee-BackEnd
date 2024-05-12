@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.converter.AlbumPostConverter;
 import memoraize.domain.album.entity.Album;
+import memoraize.domain.album.entity.mapping.AlbumLiked;
+import memoraize.domain.album.exception.AlbumNotExistException;
+import memoraize.domain.album.repository.AlbumLikedRepository;
 import memoraize.domain.album.repository.AlbumPostRepository;
 import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
@@ -22,6 +25,8 @@ import memoraize.global.exception.GeneralException;
 public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 
 	private final AlbumPostRepository albumPostRepository;
+
+	private final AlbumLikedRepository albumLikedRepository;
 	private final PhotoCommandService photoCommandService;
 
 	@Override
@@ -48,6 +53,29 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		}
 
 		albumPostRepository.deleteById(albumId);
+	}
+
+	@Override
+	@Transactional
+	public void likeAlbum(User user, Long albumId) {
+		Album album = albumPostRepository.findById(albumId).orElseThrow(() -> new AlbumNotExistException());
+		if (albumLikedRepository.findByUserIdAndAlbumId(user.getId(), albumId).isPresent())
+			return;
+		AlbumLiked albumLiked = AlbumLiked.builder()
+			.album(album)
+			.user(user)
+			.build();
+
+		albumLikedRepository.save(albumLiked);
+	}
+
+	@Override
+	@Transactional
+	public void unlikeAlbum(User user, Long albumId) {
+		albumPostRepository.findById(albumId).orElseThrow(() -> new AlbumNotExistException());
+		albumLikedRepository.findByUserIdAndAlbumId(user.getId(), albumId).ifPresent(albumLiked -> {
+			albumLikedRepository.delete(albumLiked);
+		});
 	}
 
 }

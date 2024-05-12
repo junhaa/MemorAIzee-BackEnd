@@ -26,7 +26,7 @@ public class AlbumPostConverter {
 
 	public static AlbumPostResponseDTO.AddAlbumPostResultDTO toAddAlbumPostResultDTO(Album album) {
 		return AlbumPostResponseDTO.AddAlbumPostResultDTO.builder()
-			.albumId(album.getAlbumId())
+			.albumId(album.getId())
 			.createdAt(album.getCreatedAt())
 			.build();
 	}
@@ -50,7 +50,7 @@ public class AlbumPostConverter {
 
 	public static AlbumPostResponseDTO.AlbumPostPreviewResultDTO toAlbumPostPreviewResultDTO(Album album) {
 		return AlbumPostResponseDTO.AlbumPostPreviewResultDTO.builder()
-			.albumId(album.getAlbumId())
+			.albumId(album.getId())
 			.mainImageUrl(album.getPhotoImages().get(0).getImageUrl())
 			.albumName(album.getAlbumName())
 			.createdAt(album.getCreatedAt())

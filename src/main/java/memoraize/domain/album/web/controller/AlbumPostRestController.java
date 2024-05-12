@@ -81,4 +81,15 @@ public class AlbumPostRestController {
 		return ApiResponse.onSuccess("성공적으로 앨범을 삭제했습니다.");
 	}
 
+	@PostMapping("/like/{albumId}")
+	public ApiResponse<?> likedAlbum(@PathVariable(name = "albumId") Long albumId, @LoginUser User user) {
+		albumPostCommandService.likeAlbum(user, albumId);
+		return ApiResponse.onSuccess("앨범 좋아요 등록에 성공했습니다.");
+	}
+
+	@DeleteMapping("/like/{albumId}")
+	public ApiResponse<?> unlikedAlbum(@PathVariable(name = "albumId") Long albumId, @LoginUser User user) {
+		albumPostCommandService.unlikeAlbum(user, albumId);
+		return ApiResponse.onSuccess("앨범 좋아요 취소에 성공했습니다.");
+	}
 }

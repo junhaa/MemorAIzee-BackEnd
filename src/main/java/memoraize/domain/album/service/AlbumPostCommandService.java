@@ -10,4 +10,8 @@ public interface AlbumPostCommandService {
 
 	void deleteAlbum(User user, Long albumId);
 
+	void unlikeAlbum(User user, Long albumId);
+
+	void likeAlbum(User user, Long albumId);
+
 }

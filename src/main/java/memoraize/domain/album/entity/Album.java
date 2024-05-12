@@ -23,10 +23,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import memoraize.domain.album.entity.mapping.AlbumLiked;
 import memoraize.domain.album.enums.AlbumAccess;
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.user.entity.User;
-import memoraize.domain.user.entity.mapping.AlbumLiked;
 import memoraize.global.entity.BaseEntity;
 
 @Entity
@@ -39,8 +39,8 @@ public class Album extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "albumId")
-	private Long albumId;
+	@Column(name = "album_id")
+	private Long id;
 
 	@NotBlank
 	@Column(name = "albumName", nullable = false)
