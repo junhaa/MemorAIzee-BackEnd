@@ -139,6 +139,8 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 					hashTags.add(photoHashTag);
 				}
+				if (category == TagCategory.COLOR)
+					break;
 			}
 
 			// TODO : 비동기 처리 시 어떻게 변경할 것인지
