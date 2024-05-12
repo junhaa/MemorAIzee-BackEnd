@@ -1,10 +1,13 @@
 package memoraize.domain.photo.converter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.photo.entity.Metadata;
 import memoraize.domain.photo.entity.Photo;
+import memoraize.domain.photo.entity.PhotoHashTag;
+import memoraize.domain.photo.enums.TagCategory;
 import memoraize.domain.photo.web.dto.PhotoResponseDTO;
 import memoraize.domain.review.entity.Place;
 
@@ -44,8 +47,39 @@ public class PhotoConverter {
 			.latitude(metadata.getLatiitude())
 			.longitude(metadata.getLongitude())
 			.place_id(place.getId())
-			.placeName(place.getPlaceName())
+			.place_name(place.getPlaceName())
 			.date(metadata.getDate())
+			.build();
+	}
+
+	public static PhotoResponseDTO.PhotoDetailDTO toPhotoDetailDTO(Photo photo, List<PhotoHashTag> hashTagList) {
+		String colorCode = null;
+		List<PhotoResponseDTO.HashTagResponseDTO> tagResponseDTOList = new ArrayList<>();
+		for (PhotoHashTag hashTag : hashTagList) {
+			if (hashTag.getTagCategorie() == TagCategory.COLOR) {
+				colorCode = hashTag.getTagName();
+			} else {
+				tagResponseDTOList.add(toHashTageResponseDTO(hashTag));
+			}
+		}
+
+		return PhotoResponseDTO.PhotoDetailDTO.builder()
+			.photo_id(photo.getId())
+			.photo_title(photo.getTitle())
+			.photo_comment(photo.getComment())
+			.photo_url(photo.getImageUrl())
+			.location(toLocationDTO(photo.getPlace(), photo))
+			.hashTage_list(tagResponseDTOList)
+			.photo_color_code(colorCode)
+			.build();
+
+	}
+
+	public static PhotoResponseDTO.HashTagResponseDTO toHashTageResponseDTO(PhotoHashTag photoHashTag) {
+		return PhotoResponseDTO.HashTagResponseDTO.builder()
+			.hashtag_id(photoHashTag.getId())
+			.tag_name(photoHashTag.getTagName())
+			.generated_by_ai(photoHashTag.isGenByAI())
 			.build();
 	}
 
