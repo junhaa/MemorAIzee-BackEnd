@@ -78,6 +78,7 @@ public class AlbumPostQueryServiceImpl implements AlbumPostQueryService {
 	}
 
 	@Override
+	@Transactional
 	public AlbumPostResponseDTO.AlbumDetailResponseDTO getAlbumDetail(Long albumId) {
 		Album album = albumPostRepository.findById(albumId).orElseThrow(() -> new AlbumNotExistException());
 		List<Photo> photoList = photoRepository.findByAlbumId(album.getId());
@@ -85,7 +86,7 @@ public class AlbumPostQueryServiceImpl implements AlbumPostQueryService {
 			log.error("앨범 내에 존재하는 사진이 없습니다.");
 			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 		}
-		albumPostCommandService.increseViewCount(album);
+		album.increaseViewCount();
 		List<PhotoResponseDTO.PhotoPreviewDTO> photoPreviewDTOList = photoList.stream()
 			.map(PhotoConverter::toPhotoPreviewDTO)
 			.collect(Collectors.toList());

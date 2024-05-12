@@ -20,17 +20,18 @@ public class PhotoConverter {
 			.build();
 	}
 
-	public static Photo toPhoto(String imageUrl, String comment, Album album) {
+	public static Photo toPhoto(String imageUrl, String comment, Album album, String title) {
 		return Photo.builder()
 			.comment(comment)
 			.imageUrl(imageUrl)
 			.album(album)
+			.title(title)
 			.photoHashTagList(new ArrayList<>())
 			.build();
 	}
 
 	public static Photo toPhoto(String imageUrl, Album album) {
-		return toPhoto(imageUrl, null, album);
+		return toPhoto(imageUrl, "사진에 대한 내용을 작성해주세요.", album, "사진 제목을 작성해주세요.");
 	}
 
 	public static PhotoResponseDTO.PhotoPreviewDTO toPhotoPreviewDTO(Photo photo) {
@@ -42,6 +43,8 @@ public class PhotoConverter {
 	}
 
 	public static PhotoResponseDTO.LocationDTO toLocationDTO(Place place, Photo photo) {
+		if (place == null)
+			return null;
 		Metadata metadata = photo.getMetadata();
 		return PhotoResponseDTO.LocationDTO.builder()
 			.latitude(metadata.getLatiitude())

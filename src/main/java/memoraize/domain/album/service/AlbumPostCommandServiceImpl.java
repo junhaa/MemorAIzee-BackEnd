@@ -78,9 +78,4 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		});
 	}
 
-	@Override
-	@Transactional
-	public void increseViewCount(Album album) {
-		album.increaseViewCount();
-	}
 }
