@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
+import memoraize.domain.photo.web.dto.PhotoResponseDTO;
 
 @Slf4j
 public class AlbumPostConverter {
@@ -54,6 +55,19 @@ public class AlbumPostConverter {
 			.mainImageUrl(album.getPhotoImages().get(0).getImageUrl())
 			.albumName(album.getAlbumName())
 			.createdAt(album.getCreatedAt())
+			.build();
+	}
+
+	public static AlbumPostResponseDTO.AlbumDetailResponseDTO toAlbumDetailResponseDTO(Album album,
+		List<PhotoResponseDTO.PhotoPreviewDTO> photoList) {
+		return AlbumPostResponseDTO.AlbumDetailResponseDTO.builder()
+			.album_id(album.getId())
+			.album_title(album.getAlbumName())
+			.album_info(album.getAlbumInfo())
+			.photo_count((long)photoList.size())
+			.view_count(album.getViewCount())
+			.photo_list(photoList)
+			.created_at(album.getCreatedAt())
 			.build();
 	}
 

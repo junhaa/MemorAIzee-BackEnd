@@ -13,5 +13,7 @@ public interface AlbumPostQueryService {
 	Page<Album> getUserAlbumPage(Long userId, SortStatus sortStatus, Integer page, Integer pageCount);
 
 	Long getAlbumCount(Long userId);
+
+	AlbumPostResponseDTO.AlbumDetailResponseDTO getAlbumDetail(Long albumId);
 }
 

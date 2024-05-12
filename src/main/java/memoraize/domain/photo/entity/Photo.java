@@ -37,6 +37,9 @@ public class Photo extends BaseEntity {
 	@Column(name = "photo_url", nullable = false)
 	private String imageUrl;
 
+	@Column(name = "photo_title")
+	private String title;
+
 	@Column(name = "photo_comment")
 	private String comment;
 

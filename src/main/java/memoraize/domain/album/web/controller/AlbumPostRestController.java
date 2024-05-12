@@ -33,6 +33,9 @@ public class AlbumPostRestController {
 	private final AlbumPostCommandService albumPostCommandService;
 	private final AlbumPostQueryService albumPostQueryService;
 
+	/**
+	 * 앨범 생성
+	 */
 	@PostMapping("")
 	public ApiResponse<AlbumPostResponseDTO.AddAlbumPostResultDTO> addAlbum(
 		@Valid @ModelAttribute AlbumPostRequestDTO.addAlbumPostDTO request, @LoginUser User user) {
@@ -41,6 +44,9 @@ public class AlbumPostRestController {
 		return ApiResponse.onSuccess(addAlbumPostResultDTO);
 	}
 
+	/**
+	 * 모든 앨범 페이지 호출
+	 */
 	@GetMapping("")
 	public ApiResponse<AlbumPostResponseDTO.AlbumPostPreviewResultPageDTO> getAllAlbumPage(
 		@RequestParam(name = "sortStatus") SortStatus sortStatus,
@@ -51,6 +57,9 @@ public class AlbumPostRestController {
 		return ApiResponse.onSuccess(resultPageDTO);
 	}
 
+	/**
+	 * 특정 유저가 작성한 앨범 페이지 호출
+	 */
 	@GetMapping("/users/{userId}")
 	public ApiResponse<AlbumPostResponseDTO.AlbumPostPreviewResultPageDTO> getAlbumPage(
 		@RequestParam(name = "sortStatus") SortStatus sortStatus,
@@ -63,6 +72,9 @@ public class AlbumPostRestController {
 		return ApiResponse.onSuccess(result);
 	}
 
+	/**
+	 * 내가 작성한 앨범 페이지 호출
+	 */
 	@GetMapping("/users")
 	public ApiResponse<AlbumPostResponseDTO.AlbumPostPreviewResultPageDTO> getAlbumPage(
 		@RequestParam(name = "sortStatus") SortStatus sortStatus,
@@ -75,8 +87,11 @@ public class AlbumPostRestController {
 		return ApiResponse.onSuccess(result);
 	}
 
+	/**
+	 * 앨범 삭제
+	 */
 	@DeleteMapping("/{albumId}")
-	public ApiResponse<?> deleteAlbum(@PathVariable(name = "albumId") Long albumId, @LoginUser User user) {
+	public ApiResponse<String> deleteAlbum(@PathVariable(name = "albumId") Long albumId, @LoginUser User user) {
 		albumPostCommandService.deleteAlbum(user, albumId);
 		return ApiResponse.onSuccess("성공적으로 앨범을 삭제했습니다.");
 	}
@@ -91,5 +106,15 @@ public class AlbumPostRestController {
 	public ApiResponse<?> unlikedAlbum(@PathVariable(name = "albumId") Long albumId, @LoginUser User user) {
 		albumPostCommandService.unlikeAlbum(user, albumId);
 		return ApiResponse.onSuccess("앨범 좋아요 취소에 성공했습니다.");
+	}
+
+	/**
+	 * 앨범 상세 내용
+	 */
+	@GetMapping("/{albumId}")
+	public ApiResponse<AlbumPostResponseDTO.AlbumDetailResponseDTO> getAlbumDetail(
+		@PathVariable(name = "albumId") Long albumId) {
+		AlbumPostResponseDTO.AlbumDetailResponseDTO result = albumPostQueryService.getAlbumDetail(albumId);
+		return ApiResponse.onSuccess(result);
 	}
 }
