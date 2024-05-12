@@ -16,5 +16,7 @@ public interface AlbumPostRepository extends JpaRepository<Album, Long> {
 
 	Long countByUserId(Long userId);
 
+	Optional<Album> findById(Long albumId);
+
 	Optional<List<Album>> findByAlbumName(String albumName);
 }
