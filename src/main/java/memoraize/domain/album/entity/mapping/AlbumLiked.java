@@ -1,6 +1,4 @@
-package memoraize.domain.user.entity.mapping;
-
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
+package memoraize.domain.album.entity.mapping;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,7 +8,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,11 +35,11 @@ public class AlbumLiked {
 	private Album album;
 
 	// 연관 관계 편의 메서드
-	public void setAlbum(Album album){
+	public void setAlbum(Album album) {
 		this.album = album;
 	}
 
-	public void setUser(User user){
+	public void setUser(User user) {
 		this.user = user;
 	}
 }
