@@ -1,5 +1,6 @@
 package memoraize.global.util;
 
+import java.io.File;
 import java.util.UUID;
 
 import org.bytedeco.javacv.FFmpegFrameGrabber;
@@ -24,6 +25,7 @@ public class FFmpegService {
 		// 영상과 오디오 코덱 설정
 		recorder.setVideoCodecName("libx264");
 		recorder.setAudioCodecName("aac");
+		recorder.setVideoBitrate(10000000);  // 예: 비트레이트를 10 Mbps로 설정
 
 		try {
 			// 레코더 시작
@@ -44,10 +46,31 @@ public class FFmpegService {
 
 			recorder.stop();
 			recorder.release();
+
+			File myfile = new File(outputFile);
+			while (!myfile.exists()) {
+				try {
+					Thread.sleep(500); // 파일이 생성될 때까지 0.5초마다 확인
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+					e.printStackTrace();
+					throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+				}
+			}
+
 			return outputFile;
 		} catch (Exception e) {
 			log.error("영상을 합치는 도중 에러가 발생했습니다. {}", e);
 			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public void deleteFile(String filePath) {
+		File file = new File(filePath);
+
+		// 파일이 존재하는지 확인
+		if (file.exists()) {
+			file.delete();
 		}
 	}
 }
