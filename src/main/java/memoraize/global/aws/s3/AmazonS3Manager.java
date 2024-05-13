@@ -1,6 +1,8 @@
 package memoraize.global.aws.s3;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,12 +44,34 @@ public class AmazonS3Manager {
 		return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
 	}
 
+	public String uploadFile(String keyName, String localFileUrl) {
+		File file = new File(localFileUrl);
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentType("video/mp4");
+		metadata.setContentLength(file.length());
+
+		try {
+			PutObjectRequest objectRequest = new PutObjectRequest(amazonConfig.getBucket(), keyName,
+				new FileInputStream(file), metadata);
+			PutObjectResult putObjectResult = amazonS3.putObject(objectRequest);
+			file.delete();
+		} catch (Exception e) {
+			log.error("error at AmazonS3Manager uploadFile : {}", (Object)e.getStackTrace());
+			throw new S3FileSaveException(ErrorStatus._S3_FILE_SAVE_ERROR);
+		}
+		return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
+	}
+
 	public String generatePhotoImageKeyName(Uuid uuid) {
 		return amazonConfig.getPhotoImagePath() + '/' + uuid.getUuid();
 	}
 
 	public String generateReviewImageKeyName(Uuid uuid) {
 		return amazonConfig.getReviewImagePath() + '/' + uuid.getUuid();
+	}
+
+	public String generateMemoriesKeyName(String uuid) {
+		return amazonConfig.getMemoriesPath() + '/' + uuid;
 	}
 
 }

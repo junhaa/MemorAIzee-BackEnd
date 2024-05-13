@@ -17,6 +17,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,6 +27,7 @@ import lombok.ToString;
 import memoraize.domain.album.entity.mapping.AlbumLiked;
 import memoraize.domain.album.enums.AlbumAccess;
 import memoraize.domain.photo.entity.Photo;
+import memoraize.domain.slideshow.entity.Memories;
 import memoraize.domain.user.entity.User;
 import memoraize.global.entity.BaseEntity;
 
@@ -73,10 +75,18 @@ public class Album extends BaseEntity {
 	@OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
 	private List<AlbumLiked> albumLikedList = new ArrayList<>();
 
+	@OneToOne(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Memories memories;
+
 	// 연관 관계 편의 메서드
 	public void addAlbumLiked(AlbumLiked albumLiked) {
 		albumLikedList.add(albumLiked);
 		albumLiked.setAlbum(this);
+	}
+
+	public void setMemories(Memories memories) {
+		this.memories = memories;
+		memories.setAlbum(this);
 	}
 
 	public void setUser(User user) {
