@@ -38,15 +38,16 @@ public class AmazonConfig {
 	@Value("${cloud.aws.s3.path.reviewImage}")
 	private String reviewImagePath;
 
-
+	@Value("${cloud.aws.s3.path.memories}")
+	private String memoriesPath;
 
 	@PostConstruct
-	public void init(){
+	public void init() {
 		this.awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 	}
 
 	@Bean
-	public AmazonS3 amazonS3(){
+	public AmazonS3 amazonS3() {
 		BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
 		return AmazonS3ClientBuilder.standard()
 			.withRegion(region)
@@ -55,7 +56,7 @@ public class AmazonConfig {
 	}
 
 	@Bean
-	public AWSCredentialsProvider awsCredentialsProvider(){
+	public AWSCredentialsProvider awsCredentialsProvider() {
 		return new AWSStaticCredentialsProvider(awsCredentials);
 	}
 
