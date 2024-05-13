@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import memoraize.domain.album.enums.AlbumAccess;
 import memoraize.domain.album.enums.SortStatus;
 import memoraize.domain.album.validation.annotation.ListNotBlank;
@@ -17,6 +18,7 @@ public class AlbumPostRequestDTO {
 
 	@Getter
 	@Setter
+	@ToString
 	public static class addAlbumPostDTO {
 		private String albumName;
 		private String albumInfo;
