@@ -14,6 +14,7 @@ import memoraize.domain.album.repository.AlbumPostRepository;
 import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
 import memoraize.domain.photo.service.PhotoCommandService;
+import memoraize.domain.slideshow.service.SlideShowCommandService;
 import memoraize.domain.user.entity.User;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
@@ -28,6 +29,7 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 
 	private final AlbumLikedRepository albumLikedRepository;
 	private final PhotoCommandService photoCommandService;
+	private final SlideShowCommandService slideShowCommandService;
 
 	@Override
 	@Transactional
@@ -37,6 +39,7 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		albumPostRepository.save(albumPost);
 		photoCommandService.savePhotoImages(request.getImages(), albumPost);
 
+		slideShowCommandService.makeSlideShow(albumPost);
 		// 앨범 추가 기능
 
 		return AlbumPostConverter.toAddAlbumPostResultDTO(albumPost);
