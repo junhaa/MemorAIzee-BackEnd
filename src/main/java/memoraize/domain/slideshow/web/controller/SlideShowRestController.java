@@ -1,5 +1,6 @@
 package memoraize.domain.slideshow.web.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,8 @@ import memoraize.domain.slideshow.web.dto.SlideShowRequestDTO;
 public class SlideShowRestController {
 
 	@PostMapping("/webhook")
-	public void webhook(@RequestBody SlideShowRequestDTO.CloudinaryNotification request) {
+	public ResponseEntity<?> webhook(@RequestBody SlideShowRequestDTO.CloudinaryNotification request) {
 		log.info(request.toString());
+		return ResponseEntity.ok().build();
 	}
 }
