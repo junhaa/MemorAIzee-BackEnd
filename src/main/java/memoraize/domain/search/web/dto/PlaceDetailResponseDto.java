@@ -2,6 +2,9 @@ package memoraize.domain.search.web.dto;
 
 import lombok.*;
 
+import java.util.List;
+import java.util.Optional;
+
 // place information and map marker
 public class PlaceDetailResponseDto {
     @Getter
@@ -16,7 +19,7 @@ public class PlaceDetailResponseDto {
         private String address;
         private String phoneNumber;
         private PlaceIcon placeIconInfo;
-        private String businessStatus;
+        private List<String> businessStatus;
         private String placeUrl;
     }
 
