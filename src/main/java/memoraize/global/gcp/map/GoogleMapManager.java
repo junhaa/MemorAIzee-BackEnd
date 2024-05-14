@@ -48,7 +48,7 @@ public class GoogleMapManager {
 			return Optional.ofNullable(null);
 	}
 
-	public Optional<String> placeSearchWithGoogleMap(double longitude, double latitude) {
+	public Optional<GooglePlaceApiResponseDTO> placeSearchWithGoogleMap(double longitude, double latitude) {
 		GeoApiContext context = new GeoApiContext.Builder()
 			.apiKey(apiKey)
 			.build();
@@ -93,7 +93,7 @@ public class GoogleMapManager {
 			.uri("https://places.googleapis.com/v1/places:searchNearby")
 			.header("Content-Type", "application/json")
 			.header("X-Goog-Api-Key", apiKey)
-			.header("X-Goog-FieldMask", "places.displayName")
+			.header("X-Goog-FieldMask", "places.displayName,places.id")
 			.bodyValue(requestBody)
 			.retrieve()
 			.bodyToMono(GooglePlaceApiResponseDTO.class)
@@ -104,10 +104,10 @@ public class GoogleMapManager {
 		}
 
 		result.getPlaces().stream().forEach(place -> {
-			log.info("nearby search => {}", place.getDisplayName().getText());
+			log.info("nearby search => {}, id = {}", place.getDisplayName().getText(), place.getId());
 		});
 
-		return Optional.ofNullable(result.getPlaces().get(0).getDisplayName().getText());
+		return Optional.ofNullable(result);
 		/*
 
 		AutocompletePlacesRequest.LocationRestriction locationRestriction = AutocompletePlacesRequest.LocationRestriction.newBuilder()

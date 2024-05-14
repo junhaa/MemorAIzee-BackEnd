@@ -25,8 +25,8 @@ public class GoogleMapManagerTest {
 		double latitude = 33.25850;
 		double longitude = 131.53114;
 		GeoLocation geoLocation = new GeoLocation(latitude, longitude);
-		String location = googleMapManager.reverseGeocodingWithGoogleMap(geoLocation);
-		System.out.println(location);
+		// String location = googleMapManager.reverseGeocodingWithGoogleMap(geoLocation);
+		// System.out.println(location);
 
 	}
 
@@ -35,7 +35,7 @@ public class GoogleMapManagerTest {
 		double latitude = 33.25850;
 		double longitude = 131.53114;
 		GeoLocation geoLocation = new GeoLocation(latitude, longitude);
-		System.out.println(googleMapManager.placeSearchWithGoogleMap(geoLocation));
+		// System.out.println(googleMapManager.placeSearchWithGoogleMap(geoLocation));
 	}
 
 }

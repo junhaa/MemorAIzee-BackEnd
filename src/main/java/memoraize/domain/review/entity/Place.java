@@ -30,6 +30,9 @@ public class Place {
 	@Column(name = "place_name", nullable = false)
 	private String placeName;
 
+	@Column(name = "google_map_place_id")
+	private String googleMapId;
+
 	@OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
 	private List<Photo> photoList = new ArrayList<>();
 
