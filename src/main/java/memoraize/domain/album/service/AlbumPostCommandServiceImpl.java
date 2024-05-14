@@ -36,8 +36,9 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 	public AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbum(AlbumPostRequestDTO.addAlbumPostDTO request, User user) {
 		Album albumPost = AlbumPostConverter.toAlbumPost(request);
 		user.addAlbum(albumPost);
-		albumPostRepository.save(albumPost);
 		photoCommandService.savePhotoImages(request.getImages(), albumPost);
+
+		albumPost = albumPostRepository.saveAndFlush(albumPost);
 
 		slideShowCommandService.makeSlideShow(albumPost);
 		// 앨범 추가 기능
