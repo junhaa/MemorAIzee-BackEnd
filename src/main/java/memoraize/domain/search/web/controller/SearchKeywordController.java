@@ -1,6 +1,5 @@
 package memoraize.domain.search.web.controller;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import memoraize.domain.search.service.PlaceDetailPageServiceImpl;
 import memoraize.domain.search.service.SearchKeywordServiceImpl;
@@ -17,15 +16,15 @@ public class SearchKeywordController {
     private final PlaceDetailPageServiceImpl placeDetailPageService;
 
     @GetMapping("/keyword")
-    public ApiResponse<SearchKeywordResponseDTO.SearchResultDTO> searchKeyword(@Valid @RequestBody SearchKeywordRequestDTO keyword) {
+    public ApiResponse<SearchKeywordResponseDTO.SearchResultDTO> searchKeyword(@RequestParam String keyword) {
 
         SearchKeywordResponseDTO.SearchResultDTO searchKeywordResponseDTO = searchKeywordService.searchKeyword(keyword);
 
         return ApiResponse.onSuccess(searchKeywordResponseDTO);
     }
 
-    @GetMapping("/placeDetail")
-    public ApiResponse<TotalPlaceDetailPageResponseDto.AllPlaceDetailPageResponseDto> getPlaceDetail(@Valid @RequestBody PlaceDetailRequestDto placeId) {
+    @GetMapping("/placeDetail/{placeId}")
+    public ApiResponse<TotalPlaceDetailPageResponseDto.AllPlaceDetailPageResponseDto> getPlaceDetail(@PathVariable(name = "placeId") Long placeId) { // pathVariable로 바꾸기
 
         TotalPlaceDetailPageResponseDto.AllPlaceDetailPageResponseDto allPlaceDetailPageResponseDto = new TotalPlaceDetailPageResponseDto.AllPlaceDetailPageResponseDto();
         allPlaceDetailPageResponseDto.setPlaceDetail(placeDetailPageService.getPlaceDetail(placeId));
