@@ -67,7 +67,7 @@ dependencies {
     implementation 'com.cloudinary:cloudinary-http45:1.38.0'
 
     //ffmpeg wrapper
-    implementation("org.bytedeco:javacv-platform:1.5.10")
+    implementation 'org.bytedeco:javacv-platform:1.5.10'
 
 
 }
