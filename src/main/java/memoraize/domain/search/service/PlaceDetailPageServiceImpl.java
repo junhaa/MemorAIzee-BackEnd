@@ -32,7 +32,7 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
     // this is for getting place detail && mapping marker
     @Override
     public PlaceDetailResponseDto.PlaceDetail getPlaceDetail(PlaceDetailRequestDto placeDetailRequestDto) {
-        String place_id = placeRepository.findById(placeDetailRequestDto.getPlaceId()).getPlaceId;
+        String place_id = placeRepository.findById(placeDetailRequestDto.getPlaceId()).get().getGoogleMapId();
 
         // placeName, geometry, address, phoneNumber, placeIconInfo, businessStatus, placeUrl
         String field = "name,geometry,formatted_address,international_phone_number,icon,icon_background_color,icon_mask_base_uri,weekday_text,url";
