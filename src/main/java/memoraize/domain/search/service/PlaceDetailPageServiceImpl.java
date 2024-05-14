@@ -1,5 +1,7 @@
 package memoraize.domain.search.service;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +26,7 @@ import java.util.Optional;
 public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
 
     @Value("${cloud.google.map.api-key}")
-    private static String apiKey;
+    private String apiKey;
 
     private final PlaceRepository placeRepository;
 
@@ -31,13 +34,13 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
 
     // this is for getting place detail && mapping marker
     @Override
-    public PlaceDetailResponseDto.PlaceDetail getPlaceDetail(PlaceDetailRequestDto placeDetailRequestDto) {
-        String place_id = placeRepository.findById(placeDetailRequestDto.getPlaceId()).get().getGoogleMapId();
+    public PlaceDetailResponseDto.PlaceDetail getPlaceDetail(Long placeId) {
+        String place_id = placeRepository.findById(placeId).get().getGoogleMapId();
 
         // placeName, geometry, address, phoneNumber, placeIconInfo, businessStatus, placeUrl
-        String field = "name,geometry,formatted_address,international_phone_number,icon,icon_background_color,icon_mask_base_uri,weekday_text,url";
+        String field = "name,geometry,formatted_address,international_phone_number,icon,icon_background_color,icon_mask_base_uri,opening_hours,url";
 
-        String requestUrl = "https://maps.googleapis.com/maps/api/place/details/json?fields=" + field + "&place_id=" + place_id + "&key=" + apiKey;
+        String requestUrl = "https://maps.googleapis.com/maps/api/place/details/json?fields=" + field + "&place_id=" + place_id + "&key=" + apiKey + "&language=ko";
 
         OkHttpClient client = new OkHttpClient();
 
@@ -66,6 +69,9 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
 
             JsonObject result = jsonObject.getAsJsonObject("result");
             JsonObject geometry = result.getAsJsonObject("geometry");
+            JsonObject openingHours = result.getAsJsonObject("opening_hours");
+            JsonArray weekdayTextArray = openingHours.getAsJsonArray("weekday_text");
+
             String name = result.get("name").getAsString();
             double lat = geometry.getAsJsonObject("location").get("lat").getAsDouble();
             double lng = geometry.getAsJsonObject("location").get("lng").getAsDouble();
@@ -74,9 +80,12 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
             String icon = result.get("icon").getAsString();
             String icon_background_color = result.get("icon_background_color").getAsString();
             String icon_mask_base_uri = result.get("icon_mask_base_uri").getAsString();
-            String weekday_text = result.get("weekday_text").getAsString();
             String url = result.get("url").getAsString();
 
+            List<String> weekdayTextList = new ArrayList<>();
+            for (JsonElement element : weekdayTextArray) {
+                weekdayTextList.add(element.getAsString());
+            }
 
             placeDetailResponseDto.setPlace_id(place_id);
             placeDetailResponseDto.setPlaceName(name);
@@ -88,7 +97,7 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
             placeIconInfo.setIconMaskBaseUrl(icon_mask_base_uri);
 
             placeDetailResponseDto.setPlaceIconInfo(placeIconInfo);
-            placeDetailResponseDto.setBusinessStatus(weekday_text);
+            placeDetailResponseDto.setBusinessStatus(weekdayTextList);
             placeDetailResponseDto.setPlaceUrl(url);
 
             placeInfo.setLat(lat);
@@ -105,8 +114,8 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
 
     // get all review for specific place
     @Override
-    public Optional<List<Review>> getAllReviews(PlaceDetailRequestDto placeDetailRequestDto) {
-        Optional<List<Review>> reviews = reviewRepository.findByPlaceId(placeDetailRequestDto.getPlaceId());
+    public Optional<List<Review>> getAllReviews(Long placeId) {
+        Optional<List<Review>> reviews = reviewRepository.findByPlaceId(placeId);
         if (!reviews.isPresent()) {
             // 예외처리
             return Optional.empty();
