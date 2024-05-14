@@ -5,9 +5,10 @@ import java.util.ArrayList;
 import memoraize.domain.review.entity.Place;
 
 public class PlaceConverter {
-	public static Place toPlace(String placeName) {
+	public static Place toPlace(String placeName, String googlePlaceId) {
 		return Place.builder()
 			.placeName(placeName)
+			.googleMapId(googlePlaceId)
 			.photoList(new ArrayList<>())
 			.reviewList(new ArrayList<>())
 			.build();
