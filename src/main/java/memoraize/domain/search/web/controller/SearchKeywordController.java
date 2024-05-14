@@ -2,14 +2,11 @@ package memoraize.domain.search.web.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import memoraize.domain.search.service.PlaceDetailPageServiceImpl;
 import memoraize.domain.search.service.SearchKeywordServiceImpl;
-import memoraize.domain.search.web.dto.SearchKeywordRequestDTO;
-import memoraize.domain.search.web.dto.SearchKeywordResponseDTO;
+import memoraize.domain.search.web.dto.*;
 import memoraize.global.response.ApiResponse;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchKeywordController {
 
     private final SearchKeywordServiceImpl searchKeywordService;
+    private final PlaceDetailPageServiceImpl placeDetailPageService;
 
     @GetMapping("/keyword")
     public ApiResponse<SearchKeywordResponseDTO.SearchResultDTO> searchKeyword(@Valid @RequestBody SearchKeywordRequestDTO keyword) {
@@ -24,5 +22,15 @@ public class SearchKeywordController {
         SearchKeywordResponseDTO.SearchResultDTO searchKeywordResponseDTO = searchKeywordService.searchKeyword(keyword);
 
         return ApiResponse.onSuccess(searchKeywordResponseDTO);
+    }
+
+    @GetMapping("/placeDetail")
+    public ApiResponse<TotalPlaceDetailPageResponseDto.AllPlaceDetailPageResponseDto> getPlaceDetail(@Valid @RequestBody PlaceDetailRequestDto placeId) {
+
+        TotalPlaceDetailPageResponseDto.AllPlaceDetailPageResponseDto allPlaceDetailPageResponseDto = new TotalPlaceDetailPageResponseDto.AllPlaceDetailPageResponseDto();
+        allPlaceDetailPageResponseDto.setPlaceDetail(placeDetailPageService.getPlaceDetail(placeId));
+        allPlaceDetailPageResponseDto.setReviewList(placeDetailPageService.getAllReviews(placeId));
+
+        return ApiResponse.onSuccess(allPlaceDetailPageResponseDto);
     }
 }
