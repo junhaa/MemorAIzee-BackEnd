@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import memoraize.domain.review.entity.Review;
 import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.domain.review.repository.ReviewRepository;
-import memoraize.domain.search.web.dto.PlaceDetailRequestDto;
 import memoraize.domain.search.web.dto.PlaceDetailResponseDto;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -67,26 +66,32 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
                 throw new IOException("Unexpected response code: " + status);
             }
 
-            JsonObject result = jsonObject.getAsJsonObject("result");
-            JsonObject geometry = result.getAsJsonObject("geometry");
-            JsonObject openingHours = result.getAsJsonObject("opening_hours");
-            JsonArray weekdayTextArray = openingHours.getAsJsonArray("weekday_text");
+            JsonObject result = jsonObject.has("result") ? jsonObject.getAsJsonObject("result") : null;
 
-            String name = result.get("name").getAsString();
-            double lat = geometry.getAsJsonObject("location").get("lat").getAsDouble();
-            double lng = geometry.getAsJsonObject("location").get("lng").getAsDouble();
-            String formatted_address = result.get("formatted_address").getAsString();
-            String international_phone_number = result.get("international_phone_number").getAsString();
-            String icon = result.get("icon").getAsString();
-            String icon_background_color = result.get("icon_background_color").getAsString();
-            String icon_mask_base_uri = result.get("icon_mask_base_uri").getAsString();
-            String url = result.get("url").getAsString();
+// 각각의 필드를 안전하게 추출
+            String name = (result != null && result.has("name")) ? result.get("name").getAsString() : null;
+            JsonObject geometry = (result != null && result.has("geometry")) ? result.getAsJsonObject("geometry") : null;
+            JsonObject location = (geometry != null && geometry.has("location")) ? geometry.getAsJsonObject("location") : null;
+            double lat = (location != null && location.has("lat")) ? location.get("lat").getAsDouble() : null;
+            double lng = (location != null && location.has("lng")) ? location.get("lng").getAsDouble() : null;
+            String formatted_address = (result != null && result.has("formatted_address")) ? result.get("formatted_address").getAsString() : null;
+            String international_phone_number = (result != null && result.has("international_phone_number")) ? result.get("international_phone_number").getAsString() : null;
+            String icon = (result != null && result.has("icon")) ? result.get("icon").getAsString() : null;
+            String icon_background_color = (result != null && result.has("icon_background_color")) ? result.get("icon_background_color").getAsString() : null;
+            String icon_mask_base_uri = (result != null && result.has("icon_mask_base_uri")) ? result.get("icon_mask_base_uri").getAsString() : null;
+            String url = (result != null && result.has("url")) ? result.get("url").getAsString() : null;
 
+            JsonObject openingHours = (result != null && result.has("opening_hours")) ? result.getAsJsonObject("opening_hours") : null;
+            JsonArray weekdayTextArray = (openingHours != null && openingHours.has("weekday_text")) ? openingHours.getAsJsonArray("weekday_text") : null;
             List<String> weekdayTextList = new ArrayList<>();
-            for (JsonElement element : weekdayTextArray) {
-                weekdayTextList.add(element.getAsString());
+
+            if (weekdayTextArray != null) {
+                for (JsonElement element : weekdayTextArray) {
+                    weekdayTextList.add(element.getAsString());
+                }
             }
 
+// 객체 설정 예제
             placeDetailResponseDto.setPlace_id(place_id);
             placeDetailResponseDto.setPlaceName(name);
             placeDetailResponseDto.setAddress(formatted_address);
@@ -103,6 +108,47 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService{
             placeInfo.setLat(lat);
             placeInfo.setLng(lng);
             placeDetailResponseDto.setPlaceInfo(placeInfo);
+
+            // 외부 api를 호출하고 response를 받아올 때 Gson이 아닌 Jackson으로 받아와라.
+            // Gson은 null safty가 보장되어있지 않아서 null 처리를 따로 해주어야 하는데
+            // Jackson은 알아서 null 처리를 해준다 !!!
+
+//            JsonObject result = jsonObject.getAsJsonObject("result");
+//            JsonObject geometry = result.getAsJsonObject("geometry");
+//            JsonObject openingHours = result.getAsJsonObject("opening_hours");
+//            JsonArray weekdayTextArray = openingHours.getAsJsonArray("weekday_text");
+//
+//            String name = result.get("name").getAsString();
+//            double lat = geometry.getAsJsonObject("location").get("lat").getAsDouble();
+//            double lng = geometry.getAsJsonObject("location").get("lng").getAsDouble();
+//            String formatted_address = result.get("formatted_address").getAsString();
+//            String international_phone_number = result.get("international_phone_number").getAsString();
+//            String icon = result.get("icon").getAsString();
+//            String icon_background_color = result.get("icon_background_color").getAsString();
+//            String icon_mask_base_uri = result.get("icon_mask_base_uri").getAsString();
+//            String url = result.get("url").getAsString();
+//
+//            List<String> weekdayTextList = new ArrayList<>();
+//            for (JsonElement element : weekdayTextArray) {
+//                weekdayTextList.add(element.getAsString());
+//            }
+//
+//            placeDetailResponseDto.setPlace_id(place_id);
+//            placeDetailResponseDto.setPlaceName(name);
+//            placeDetailResponseDto.setAddress(formatted_address);
+//            placeDetailResponseDto.setPhoneNumber(international_phone_number);
+//
+//            placeIconInfo.setIcon(icon);
+//            placeIconInfo.setBgColor(icon_background_color);
+//            placeIconInfo.setIconMaskBaseUrl(icon_mask_base_uri);
+//
+//            placeDetailResponseDto.setPlaceIconInfo(placeIconInfo);
+//            placeDetailResponseDto.setBusinessStatus(weekdayTextList);
+//            placeDetailResponseDto.setPlaceUrl(url);
+//
+//            placeInfo.setLat(lat);
+//            placeInfo.setLng(lng);
+//            placeDetailResponseDto.setPlaceInfo(placeInfo);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
