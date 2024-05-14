@@ -28,6 +28,7 @@ public class PhotoResponseDTO {
 		private Long photo_id;
 		private String photo_url;
 		private LocationDTO location;
+		private String color_code;
 
 	}
 
