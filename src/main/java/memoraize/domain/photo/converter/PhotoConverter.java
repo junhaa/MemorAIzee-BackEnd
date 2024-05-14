@@ -35,9 +35,18 @@ public class PhotoConverter {
 	}
 
 	public static PhotoResponseDTO.PhotoPreviewDTO toPhotoPreviewDTO(Photo photo) {
+		String colorCode = null;
+		for (PhotoHashTag hashTag : photo.getPhotoHashTagList()) {
+			if (hashTag.getTagCategorie() == TagCategory.COLOR) {
+				colorCode = hashTag.getTagName();
+				break;
+			}
+		}
+
 		return PhotoResponseDTO.PhotoPreviewDTO.builder()
 			.photo_id(photo.getId())
 			.photo_url(photo.getImageUrl())
+			.color_code(colorCode)
 			.location(toLocationDTO(photo.getPlace(), photo))
 			.build();
 	}
