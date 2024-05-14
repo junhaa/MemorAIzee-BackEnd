@@ -37,6 +37,7 @@ import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.global.aws.s3.AmazonS3Manager;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.gcp.map.GoogleMapManager;
+import memoraize.global.gcp.map.dto.GooglePlaceApiResponseDTO;
 
 @Slf4j
 @Service
@@ -88,10 +89,13 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			metadata.ifPresent(data -> {
 				photo.setMetadata(data);
 				// nearby search
-				Optional<String> placeName = googleMapManager.placeSearchWithGoogleMap(data.getLongitude(),
+				Optional<GooglePlaceApiResponseDTO> ret = googleMapManager.placeSearchWithGoogleMap(data.getLongitude(),
 					data.getLatiitude());
+				Optional<String> placeName = Optional.ofNullable(
+					ret.get().getPlaces().get(0).getDisplayName().getText());
+				String googlePlaceId;
 				if (!placeName.isPresent()) {
-
+					googlePlaceId = null;
 					// reverseGeocoding
 					try {
 						placeName = googleMapManager.reverseGeocodingWithGoogleMap(data.getLatiitude(),
@@ -99,6 +103,8 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 					} catch (Exception e) {
 						throw new ExtractPlaceException(ErrorStatus._INTERNAL_SERVER_ERROR);
 					}
+				} else {
+					googlePlaceId = ret.get().getPlaces().get(0).getId();
 				}
 				placeName.ifPresent(pname -> {
 					// 지역 이름 추출에 성공하면
@@ -110,7 +116,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 						place = placeOptional.get();
 						place.addPhoto(photo);
 					} else {
-						place = PlaceConverter.toPlace(pname);
+						place = PlaceConverter.toPlace(pname, googlePlaceId);
 						placeRepository.save(place);
 						place.addPhoto(photo);
 					}
