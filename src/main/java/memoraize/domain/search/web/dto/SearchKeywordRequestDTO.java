@@ -1,6 +1,6 @@
 package memoraize.domain.search.web.dto;
 
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 public class SearchKeywordRequestDTO {
 
-    @NotEmpty(message = "키워드를 입력해주세요.")
+    @NotBlank(message = "키워드를 입력해주세요.")
     private String keyword;
 }
