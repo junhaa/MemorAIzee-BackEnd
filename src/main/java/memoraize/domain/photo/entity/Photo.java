@@ -75,4 +75,12 @@ public class Photo extends BaseEntity {
 		this.metadata = metadata;
 		metadata.setPhoto(this);
 	}
+
+	public void setComment(String comment){
+		this.comment=comment;
+	}
+
+	public void setTitle(String title){
+		this.title=title;
+	}
 }
