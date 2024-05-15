@@ -1,44 +1,67 @@
 package memoraize.domain.search.web.dto;
 
-import lombok.*;
-import memoraize.domain.album.entity.Album;
-import memoraize.domain.review.entity.Place;
-import memoraize.domain.review.entity.Review;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 public class SearchKeywordResponseDTO {
 
     @Getter
-    @Setter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SearchResultDTO{
+    public static class SearchResultDTO {
 
-        private List<Album> albumList;
+        private List<AlbumInfo> albumList;
 
-        private List<SearchUserInfoDTO> userList;
+        private List<UserInfo> userList;
 
-        private List<Place> placeList;
+        private List<PlaceInfo> placeList;
 
-        private List<Review> reviewList;
+        private List<ReviewInfo> reviewList;
 
     }
 
     @Getter
-    @Setter
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class SearchUserInfoDTO{
+    public static class AlbumInfo {
+        private Long id;
+        private String albumName;
+    }
 
-        private Long userId;
-
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserInfo {
+        private Long id;
+        private String userId;
         private String userName;
+        private String profileImg;
+    }
 
-        private String userInstruction;
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PlaceInfo {
+        private Long id;
+        private String placeName;
+    }
 
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ReviewInfo {
+        private Long id;
+        private float rate;
+        private String context;
     }
 
 }
