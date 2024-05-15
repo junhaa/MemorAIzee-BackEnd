@@ -53,7 +53,7 @@ public class GeminiApiServiceImpl implements GeminiApiService {
         // JSON 데이터 구성
         String jsonBody = "{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
                 "사진의 dominant colors는" + joinStrings(colors) + ". " +
-                "위치는 ." +
+                "위치는" +place+ ". " +
                 "사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 완결된 문장으로 부탁해\"}]}]}";
 
         HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
