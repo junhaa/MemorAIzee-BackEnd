@@ -1,12 +1,5 @@
 package memoraize.domain.search.service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import lombok.RequiredArgsConstructor;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.repository.AlbumPostRepository;
@@ -14,47 +7,74 @@ import memoraize.domain.review.entity.Place;
 import memoraize.domain.review.entity.Review;
 import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.domain.review.repository.ReviewRepository;
-import memoraize.domain.search.web.dto.SearchKeywordRequestDTO;
 import memoraize.domain.search.web.dto.SearchKeywordResponseDTO;
 import memoraize.domain.user.entity.User;
 import memoraize.domain.user.repository.UserRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class SearchKeywordServiceImpl implements SearchKeywordService {
 
-	private final AlbumPostRepository albumPostRepository;
-	private final UserRepository userRepository;
-	private final PlaceRepository placeRepository;
-	private final ReviewRepository reviewRepository;
+    private final AlbumPostRepository albumPostRepository;
+    private final UserRepository userRepository;
+    private final PlaceRepository placeRepository;
+    private final ReviewRepository reviewRepository;
 
-	// 검색 메서드
-	@Override
-	public SearchKeywordResponseDTO.SearchResultDTO searchKeyword(String keyword) {
+    // 검색 메서드
+    @Override
+    public SearchKeywordResponseDTO.SearchResultDTO searchKeyword(String keyword) {
 
-		Optional<List<Album>> resultAlbumList = albumPostRepository.findByAlbumName(keyword);
-		Optional<List<User>> resultUserList = userRepository.findByUserName(keyword);
-		Optional<List<Place>> resultPlaceList = placeRepository.findAllByPlaceName(keyword);
-		Optional<List<Review>> resultReviewList = reviewRepository.findByContext(keyword);
+        List<Album> resultAlbumList = albumPostRepository.findByAlbumNameContaining(keyword);
+        List<User> resultUserList = userRepository.findByUserNameContaining(keyword);
+        List<Place> resultPlaceList = placeRepository.findAllByPlaceNameContaining(keyword);
+        List<Review> resultReviewList = reviewRepository.findByContextContaining(keyword);
 
-		List<SearchKeywordResponseDTO.SearchUserInfoDTO> userInfoDTOList = new ArrayList<>();
-		for (User user : resultUserList.get()) {
-			SearchKeywordResponseDTO.SearchUserInfoDTO userInfoDTO = new SearchKeywordResponseDTO.SearchUserInfoDTO();
-			userInfoDTO.setUserId(user.getId());
-			userInfoDTO.setUserName(user.getUserName());
-			userInfoDTO.setUserInstruction(user.getIntroduction());
 
-			userInfoDTOList.add(userInfoDTO);
-		}
+        List<SearchKeywordResponseDTO.AlbumInfo> albumInfo = new ArrayList<>();
+        for (Album album : resultAlbumList) {
+            albumInfo.add(SearchKeywordResponseDTO.AlbumInfo.builder()
+                    .id(album.getId())
+                    .albumName(album.getAlbumName())
+                    .build());
+        }
 
-		SearchKeywordResponseDTO.SearchResultDTO searchResultDTO = new SearchKeywordResponseDTO.SearchResultDTO();
-		searchResultDTO.setAlbumList(resultAlbumList.get());
-		searchResultDTO.setUserList(userInfoDTOList);
-		searchResultDTO.setPlaceList(resultPlaceList.get());
-		searchResultDTO.setReviewList(resultReviewList.get());
-		return searchResultDTO;
-	}
+        List<SearchKeywordResponseDTO.UserInfo> userInfo = new ArrayList<>();
+        for (User user : resultUserList) {
+            userInfo.add(SearchKeywordResponseDTO.UserInfo.builder()
+                    .id(user.getId())
+                    .userId(user.getLoginId())
+                    .userName(user.getUserName())
+                    .build());
+        }
 
-	// 정렬을 하면 어떤가?
+        List<SearchKeywordResponseDTO.PlaceInfo> placeInfo = new ArrayList<>();
+        for (Place place : resultPlaceList) {
+            placeInfo.add(SearchKeywordResponseDTO.PlaceInfo.builder()
+                    .id(place.getId())
+                    .placeName(place.getPlaceName())
+                    .build());
+        }
+
+        List<SearchKeywordResponseDTO.ReviewInfo> reviewInfo = new ArrayList<>();
+        for (Review review : resultReviewList) {
+            reviewInfo.add(SearchKeywordResponseDTO.ReviewInfo.builder()
+                    .id(review.getId())
+                    .rate(review.getStar())
+                    .context(review.getContext())
+                    .build());
+        }
+
+        return SearchKeywordResponseDTO.SearchResultDTO.builder()
+                .albumList(albumInfo)
+                .userList(userInfo)
+                .placeList(placeInfo)
+                .reviewList(reviewInfo)
+                .build();
+    }
 }
