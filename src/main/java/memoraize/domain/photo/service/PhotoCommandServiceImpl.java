@@ -50,6 +50,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 	private final PlaceRepository placeRepository;
 	private final GoogleMapManager googleMapManager;
 	private final VisionApiService visionApiService;
+	private final GeminiApiService geminiApiService;
 
 	private final PhotoRepository photoRepository;
 
@@ -153,6 +154,22 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			for (PhotoHashTag hashTag : hashTags) {
 				photo.addHashTag(hashTag);
 			}
+
+			//photo title, comment 생성
+			//photo title, comment
+			List<String> labels=new ArrayList<>();
+			List<String> colors= new ArrayList<>();
+			for(PhotoHashTag hashTag: hashTags){//이렇게 써도 되려나..
+				if(hashTag.getTagCategorie()== TagCategory.LABEL)
+					labels.add(hashTag.getTagName());
+				if(hashTag.getTagCategorie()==TagCategory.COLOR)
+					colors.add(hashTag.getTagName());
+			}
+
+			photo.setTitle(geminiApiService.generateTitle(colors,labels));
+			photo.setComment(geminiApiService.generateComment(colors,labels,photo.getPlace().getPlaceName()));
+
+
 		}
 	}
 

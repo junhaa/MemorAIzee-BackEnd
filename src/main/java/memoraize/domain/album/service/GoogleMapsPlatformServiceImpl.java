@@ -3,6 +3,7 @@ package memoraize.domain.album.service;
 import lombok.RequiredArgsConstructor;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.repository.AlbumPostRepository;
+import memoraize.domain.album.web.dto.GoogleMapsPlatformRequestDTO;
 import memoraize.domain.album.web.dto.GoogleMapsPlatformResponseDTO;
 import memoraize.domain.photo.entity.Metadata;
 import memoraize.domain.photo.entity.Photo;
