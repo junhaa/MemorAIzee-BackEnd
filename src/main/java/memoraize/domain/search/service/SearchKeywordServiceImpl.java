@@ -42,6 +42,7 @@ public class SearchKeywordServiceImpl implements SearchKeywordService {
                     .id(album.getId())
                     .albumName(album.getAlbumName())
                     .userName(album.getUser().getUserName())
+                    .mainImg(album.getPhotoImages().get(0).getImageUrl())
                     .build());
         }
 

@@ -33,6 +33,7 @@ public class SearchKeywordResponseDTO {
         private Long id;
         private String albumName;
         private String userName;
+        private String mainImg;
     }
 
     @Getter
