@@ -41,6 +41,7 @@ public class SearchKeywordServiceImpl implements SearchKeywordService {
             albumInfo.add(SearchKeywordResponseDTO.AlbumInfo.builder()
                     .id(album.getId())
                     .albumName(album.getAlbumName())
+                    .userName(album.getUser().getUserName())
                     .build());
         }
 

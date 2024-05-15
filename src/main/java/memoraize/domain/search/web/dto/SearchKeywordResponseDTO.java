@@ -32,6 +32,7 @@ public class SearchKeywordResponseDTO {
     public static class AlbumInfo {
         private Long id;
         private String albumName;
+        private String userName;
     }
 
     @Getter
