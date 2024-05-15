@@ -3,6 +3,7 @@ package memoraize.domain.album.web.dto;
 import lombok.*;
 
 import java.util.List;
+import java.util.Map;
 
 public class GoogleMapsPlatformResponseDTO {
 
@@ -12,7 +13,7 @@ public class GoogleMapsPlatformResponseDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class WayPointsList{
+    public static class WayPointsList {
         private List<GetMedataByDate> wayPointsList;
     }
 
@@ -23,7 +24,7 @@ public class GoogleMapsPlatformResponseDTO {
     @NoArgsConstructor
     @Builder
     public static class GetMedataByDate {
-        private List<GetMetadataList> metadataByDate;
+        private Map<String, List<GetMetadataList>> metadataByDate;
     }
 
     // 메타데이터
