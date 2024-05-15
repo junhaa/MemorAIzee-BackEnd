@@ -31,12 +31,12 @@ public class SearchKeywordServiceImpl implements SearchKeywordService {
 
 	// 검색 메서드
 	@Override
-	public SearchKeywordResponseDTO.SearchResultDTO searchKeyword(SearchKeywordRequestDTO keyword) {
+	public SearchKeywordResponseDTO.SearchResultDTO searchKeyword(String keyword) {
 
-		Optional<List<Album>> resultAlbumList = albumPostRepository.findByAlbumName(keyword.getKeyword());
-		Optional<List<User>> resultUserList = userRepository.findByUserName(keyword.getKeyword());
-		Optional<List<Place>> resultPlaceList = placeRepository.findAllByPlaceName(keyword.getKeyword());
-		Optional<List<Review>> resultReviewList = reviewRepository.findByContext(keyword.getKeyword());
+		Optional<List<Album>> resultAlbumList = albumPostRepository.findByAlbumName(keyword);
+		Optional<List<User>> resultUserList = userRepository.findByUserName(keyword);
+		Optional<List<Place>> resultPlaceList = placeRepository.findAllByPlaceName(keyword);
+		Optional<List<Review>> resultReviewList = reviewRepository.findByContext(keyword);
 
 		List<SearchKeywordResponseDTO.SearchUserInfoDTO> userInfoDTOList = new ArrayList<>();
 		for (User user : resultUserList.get()) {

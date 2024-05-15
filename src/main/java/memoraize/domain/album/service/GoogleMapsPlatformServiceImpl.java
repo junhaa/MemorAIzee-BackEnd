@@ -20,9 +20,9 @@ public class GoogleMapsPlatformServiceImpl implements GoogleMapsPlatformService{
     private final AlbumPostRepository albumPostRepository;
 
     @Override
-    public GoogleMapsPlatformResponseDTO.WayPointsList getWayPoints(GoogleMapsPlatformRequestDTO googleMapsPlatformRequestDTO) {
+    public GoogleMapsPlatformResponseDTO.WayPointsList getWayPoints(Long albumId) {
 
-        Optional<Album> albumOptional = albumPostRepository.findById(googleMapsPlatformRequestDTO.getAlbumId());
+        Optional<Album> albumOptional = albumPostRepository.findById(albumId);
 
         Album album = albumOptional.orElseThrow(() -> new RuntimeException(""));
 
