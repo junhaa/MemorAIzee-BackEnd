@@ -28,12 +28,13 @@ public class LoginService implements UserDetailsService {
 		User user = userRepository.findByLoginId(loginId)
 			.orElseThrow(() -> new UsernameNotFoundException("해당 아이디가 존재하지 않습니다."));
 
-		log.info("loadUserByUsername = {}", user);
-
 		return org.springframework.security.core.userdetails.User.builder()
 			.username(user.getLoginId())
-			.authorities(user.getAuthorityList().stream().map(authority -> new SimpleGrantedAuthority(authority.getRole().toString())).collect(
-				Collectors.toSet()))
+			.authorities(user.getAuthorityList()
+				.stream()
+				.map(authority -> new SimpleGrantedAuthority(authority.getRole().toString()))
+				.collect(
+					Collectors.toSet()))
 			.password(user.getPassword())
 			.build();
 	}

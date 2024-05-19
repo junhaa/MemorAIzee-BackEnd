@@ -47,4 +47,13 @@ public class UserResponseDTO {
 		private boolean can_follow;
 	}
 
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@ToString
+	public static class LoginResponseDTO {
+		private Long user_id;
+	}
+
 }

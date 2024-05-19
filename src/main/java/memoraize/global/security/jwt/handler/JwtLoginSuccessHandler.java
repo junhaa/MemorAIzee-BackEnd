@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -14,7 +15,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import memoraize.global.enums.statuscode.SuccessStatus;
+import memoraize.domain.user.entity.User;
+import memoraize.domain.user.enums.LoginType;
+import memoraize.domain.user.repository.UserRepository;
+import memoraize.domain.user.web.dto.UserResponseDTO;
 import memoraize.global.response.ApiResponse;
 import memoraize.global.security.jwt.JwtService;
 
@@ -27,19 +31,23 @@ import memoraize.global.security.jwt.JwtService;
 public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
 	private final JwtService jwtService;
 	private final ObjectMapper objectMapper;
+	private final UserRepository userRepository;
 
 	/**
 	 * 인증에 성공하면 Access Token과 Refresh Token을 생성한 후 반환
 	 */
 	@Override
+	@Transactional(readOnly = true)
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 		Authentication authentication) throws IOException, ServletException {
 		UserDetails principal = (UserDetails)authentication.getPrincipal();
 		String loginId = principal.getUsername();
 		log.info("Jwt Login Success :: Login ID = {}", loginId);
 		response.setContentType("application/json;charset=UTF-8");
+
+		User user = userRepository.findByLoginTypeAndLoginId(LoginType.LOCAL, loginId).orElse(null);
 		response.getWriter().write(objectMapper.writeValueAsString(
-			ApiResponse.onFailure(SuccessStatus._OK.getCode(), SuccessStatus._OK.getMessage(), "로그인에 성공했습니다.")));
+			ApiResponse.onSuccess(UserResponseDTO.LoginResponseDTO.builder().user_id(user.getId()).build())));
 		loginSuccess(response, loginId);
 	}
 
