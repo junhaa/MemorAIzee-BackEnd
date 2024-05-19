@@ -16,7 +16,9 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GeminiApiServiceImpl implements GeminiApiService {
@@ -59,14 +61,14 @@ public class GeminiApiServiceImpl implements GeminiApiService {
 			jsonBody =
 				"{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
 					"사진의 dominant colors는" + joinStrings(colors) + ". " +
-					"사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 완결된 문장으로 부탁해\"}]}]}";
+					"사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 3줄로 표현 부탁해\"}]}]}";
 		} else {
 			// JSON 데이터 구성
 			jsonBody =
 				"{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
 					"사진의 dominant colors는" + joinStrings(colors) + ". " +
 					"위치는" + place + ". " +
-					"사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 완결된 문장으로 부탁해\"}]}]}";
+					"사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 3줄로 표현 부탁해\"}]}]}";
 
 		}
 
@@ -77,7 +79,9 @@ public class GeminiApiServiceImpl implements GeminiApiService {
 			String.class);
 
 		if (responseEntity.getStatusCode() == HttpStatus.OK) {
-			return extractTextFromJson(responseEntity.getBody());
+			String text = extractTextFromJson(responseEntity.getBody());
+			log.info(text);
+			return text;
 		} else {
 			return "Error: " + responseEntity.getStatusCodeValue();
 		}
