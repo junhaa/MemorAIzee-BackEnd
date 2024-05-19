@@ -1,14 +1,13 @@
 package memoraize.domain.search.service;
 
-import memoraize.domain.review.entity.Review;
+import java.util.List;
+
+import memoraize.domain.review.web.dto.ReviewResponseDTO;
 import memoraize.domain.search.web.dto.PlaceDetailResponseDto;
 
-import java.util.List;
-import java.util.Optional;
-
 public interface PlaceDetailPageService {
-    PlaceDetailResponseDto.PlaceDetail getPlaceDetail(Long placeId);
+	PlaceDetailResponseDto.PlaceDetail getPlaceDetail(Long placeId);
 
-    Optional<List<Review>> getAllReviews(Long placeDetailRequestDto);
+	List<ReviewResponseDTO.ReviewQueryResultDTO> getAllReviews(Long placeDetailRequestDto);
 
 }
