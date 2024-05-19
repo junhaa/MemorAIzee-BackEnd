@@ -92,8 +92,13 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				// nearby search
 				Optional<GooglePlaceApiResponseDTO> ret = googleMapManager.placeSearchWithGoogleMap(data.getLongitude(),
 					data.getLatiitude());
-				Optional<String> placeName = Optional.ofNullable(
-					ret.get().getPlaces().get(0).getDisplayName().getText());
+				Optional<String> placeName;
+				if (!ret.isPresent()) {
+					placeName = Optional.ofNullable(null);
+				} else {
+					placeName = Optional.ofNullable(
+						ret.get().getPlaces().get(0).getDisplayName().getText());
+				}
 				String googlePlaceId;
 				if (!placeName.isPresent()) {
 					googlePlaceId = null;
@@ -157,18 +162,17 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 			//photo title, comment 생성
 			//photo title, comment
-			List<String> labels=new ArrayList<>();
-			List<String> colors= new ArrayList<>();
-			for(PhotoHashTag hashTag: hashTags){//이렇게 써도 되려나..
-				if(hashTag.getTagCategorie()== TagCategory.LABEL)
+			List<String> labels = new ArrayList<>();
+			List<String> colors = new ArrayList<>();
+			for (PhotoHashTag hashTag : hashTags) {//이렇게 써도 되려나..
+				if (hashTag.getTagCategorie() == TagCategory.LABEL)
 					labels.add(hashTag.getTagName());
-				if(hashTag.getTagCategorie()==TagCategory.COLOR)
+				if (hashTag.getTagCategorie() == TagCategory.COLOR)
 					colors.add(hashTag.getTagName());
 			}
 
-			photo.setTitle(geminiApiService.generateTitle(colors,labels));
-			photo.setComment(geminiApiService.generateComment(colors,labels,photo.getPlace().getPlaceName()));
-
+			photo.setTitle(geminiApiService.generateTitle(colors, labels));
+			photo.setComment(geminiApiService.generateComment(colors, labels, photo.getPlace().getPlaceName()));
 
 		}
 	}
