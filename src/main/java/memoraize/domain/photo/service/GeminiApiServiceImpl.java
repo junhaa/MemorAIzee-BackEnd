@@ -1,189 +1,202 @@
 package memoraize.domain.photo.service;
 
-import com.google.gson.Gson;
-import lombok.RequiredArgsConstructor;
+import java.util.Iterator;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
-
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Iterator;
-import java.util.List;
+import com.google.gson.Gson;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class GeminiApiServiceImpl implements GeminiApiService {
-    private  Gson gson= new Gson();
-    private  HttpHeaders headers= new HttpHeaders();
+	private Gson gson = new Gson();
+	private HttpHeaders headers = new HttpHeaders();
 
-    @Value("${cloud.google.gemini.api-key}")
-    private String apiKey;
+	@Value("${cloud.google.gemini.api-key}")
+	private String apiKey;
 
+	public String generateTitle(List<String> colors, List<String> labels) {
+		String url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + apiKey;
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
-    public String generateTitle(List<String> colors, List<String> labels) {
-        String url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + apiKey;
-        headers.setContentType(MediaType.APPLICATION_JSON);
+		// JSON 데이터 구성
+		String jsonBody =
+			"{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
+				"사진의 dominant colors는" + joinStrings(colors) + ". " +
+				"사진의 분위기를 한줄로 표현해줘.\"}]}]}";
 
+		HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
 
-        // JSON 데이터 구성
-        String jsonBody = "{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
-                "사진의 dominant colors는" + joinStrings(colors) + ". " +
-                "사진의 분위기를 한줄로 표현해줘.\"}]}]}";
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+			String.class);
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+			return extractTextFromJson(responseEntity.getBody());
+		} else {
+			return "Error: " + responseEntity.getStatusCodeValue();
+		}
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+	}
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            return extractTextFromJson(responseEntity.getBody());
-        } else {
-            return "Error: " + responseEntity.getStatusCodeValue();
-        }
+	public String generateComment(List<String> colors, List<String> labels, String place) {
+		String url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + apiKey;
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
+		String jsonBody;
+		if (place == null) {
+			jsonBody =
+				"{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
+					"사진의 dominant colors는" + joinStrings(colors) + ". " +
+					"사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 완결된 문장으로 부탁해\"}]}]}";
+		} else {
+			// JSON 데이터 구성
+			jsonBody =
+				"{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
+					"사진의 dominant colors는" + joinStrings(colors) + ". " +
+					"위치는" + place + ". " +
+					"사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 완결된 문장으로 부탁해\"}]}]}";
 
-    }
+		}
 
-    public String generateComment(List<String> colors, List<String> labels, String place ) {
-        String url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + apiKey;
-        headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
 
-        // JSON 데이터 구성
-        String jsonBody = "{\"contents\":[{\"parts\":[{\"text\":\"이건 여행 사진에 대한 정보야. 사진의 레이블은 " + joinStrings(labels) + ". " +
-                "사진의 dominant colors는" + joinStrings(colors) + ". " +
-                "위치는" +place+ ". " +
-                "사진에 대한 감각적인 설명을 해줘. 블로그에 올릴거니까 완결된 문장으로 부탁해\"}]}]}";
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity,
+			String.class);
 
-        HttpEntity<String> requestEntity = new HttpEntity<>(jsonBody, headers);
+		if (responseEntity.getStatusCode() == HttpStatus.OK) {
+			return extractTextFromJson(responseEntity.getBody());
+		} else {
+			return "Error: " + responseEntity.getStatusCodeValue();
+		}
+	}
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, requestEntity, String.class);
+	private String joinStrings(List<String> list) {
+		//중간에는 쉼표, 마지막에는 마침표 넣도록하자.
+		StringBuilder result = new StringBuilder();
+		Iterator<String> iterator = list.iterator();
 
-        if (responseEntity.getStatusCode() == HttpStatus.OK) {
-            return extractTextFromJson(responseEntity.getBody());
-        } else {
-            return "Error: " + responseEntity.getStatusCodeValue();
-        }
-    }
+		//list가 빈 경우 예외처리 필요<
+		if (iterator.hasNext()) {
+			while (true) {
+				result.append(iterator.next());
+				if (!iterator.hasNext())
+					break;
+				result.append(", ");
+			}
+		} else {
 
+		}
 
-    private String joinStrings(List<String> list) {
-        //중간에는 쉼표, 마지막에는 마침표 넣도록하자.
-        StringBuilder result = new StringBuilder();
-        Iterator<String> iterator = list.iterator();
+		return result.toString();
+	}
 
-        //list가 빈 경우 예외처리 필요<
-        if (iterator.hasNext()) {
-            while (true) {
-                result.append(iterator.next());
-                if (!iterator.hasNext())
-                    break;
-                result.append(", ");
-            }
-        } else {
+	private String extractTextFromJson(String jsonBody) {
+		ResponseData responseData = gson.fromJson(jsonBody, ResponseData.class);
 
-        }
+		return responseData.getCandidates().get(0).getContent().getParts().get(0).getText();
+	}
 
-        return result.toString();
-    }
+	//앨범용, 사진용
+	//결과 파싱?용
 
-    private String extractTextFromJson(String jsonBody) {
-        ResponseData responseData=gson.fromJson(jsonBody,ResponseData.class);
+	public class ResponseData {
+		private List<Candidate> candidates;
+		private UsageMetadata usageMetadata;
 
-        return responseData.getCandidates().get(0).getContent().getParts().get(0).getText();
-    }
+		public List<Candidate> getCandidates() {
+			return candidates;
+		}
 
-    //앨범용, 사진용
-    //결과 파싱?용
+		public UsageMetadata getUsageMetadata() {
+			return usageMetadata;
+		}
+	}
 
+	class Candidate {
+		private Content content;
+		private String finishReason;
+		private int index;
+		private List<SafetyRating> safetyRatings;
 
-    public class ResponseData {
-        private List<Candidate> candidates;
-        private UsageMetadata usageMetadata;
+		public Content getContent() {
+			return content;
+		}
 
-        public List<Candidate> getCandidates() {
-            return candidates;
-        }
+		public String getFinishReason() {
+			return finishReason;
+		}
 
-        public UsageMetadata getUsageMetadata() {
-            return usageMetadata;
-        }
-    }
+		public int getIndex() {
+			return index;
+		}
 
-    class Candidate {
-        private Content content;
-        private String finishReason;
-        private int index;
-        private List<SafetyRating> safetyRatings;
+		public List<SafetyRating> getSafetyRatings() {
+			return safetyRatings;
+		}
+	}
 
-        public Content getContent() {
-            return content;
-        }
+	class Content {
+		private List<Part> parts;
+		private String role;
 
-        public String getFinishReason() {
-            return finishReason;
-        }
+		public List<Part> getParts() {
+			return parts;
+		}
 
-        public int getIndex() {
-            return index;
-        }
+		public String getRole() {
+			return role;
+		}
+	}
 
-        public List<SafetyRating> getSafetyRatings() {
-            return safetyRatings;
-        }
-    }
+	class Part {
+		private String text;
 
-    class Content {
-        private List<Part> parts;
-        private String role;
+		public String getText() {
+			return text;
+		}
+	}
 
-        public List<Part> getParts() {
-            return parts;
-        }
+	class SafetyRating {
+		private String category;
+		private String probability;
 
-        public String getRole() {
-            return role;
-        }
-    }
+		public String getCategory() {
+			return category;
+		}
 
-    class Part {
-        private String text;
+		public String getProbability() {
+			return probability;
+		}
+	}
 
-        public String getText() {
-            return text;
-        }
-    }
+	class UsageMetadata {
+		private int promptTokenCount;
+		private int candidatesTokenCount;
+		private int totalTokenCount;
 
-    class SafetyRating {
-        private String category;
-        private String probability;
+		public int getPromptTokenCount() {
+			return promptTokenCount;
+		}
 
-        public String getCategory() {
-            return category;
-        }
+		public int getCandidatesTokenCount() {
+			return candidatesTokenCount;
+		}
 
-        public String getProbability() {
-            return probability;
-        }
-    }
-
-    class UsageMetadata {
-        private int promptTokenCount;
-        private int candidatesTokenCount;
-        private int totalTokenCount;
-
-        public int getPromptTokenCount() {
-            return promptTokenCount;
-        }
-
-        public int getCandidatesTokenCount() {
-            return candidatesTokenCount;
-        }
-
-        public int getTotalTokenCount() {
-            return totalTokenCount;
-        }
-    }
+		public int getTotalTokenCount() {
+			return totalTokenCount;
+		}
+	}
 }

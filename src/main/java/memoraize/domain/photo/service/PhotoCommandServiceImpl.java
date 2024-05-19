@@ -86,11 +86,15 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			// 이미지 파일 위치 정보 추출
 			Optional<memoraize.domain.photo.entity.Metadata> metadata = extractMetadata(image);
 
+			String myPlaceName = null;
+
 			// Google map => 위치 호출
-			metadata.ifPresent(data -> {
+			if (metadata.isPresent()) {
+				memoraize.domain.photo.entity.Metadata data = metadata.get();
 				photo.setMetadata(data);
 				// nearby search
-				Optional<GooglePlaceApiResponseDTO> ret = googleMapManager.placeSearchWithGoogleMap(data.getLongitude(),
+				Optional<GooglePlaceApiResponseDTO> ret = googleMapManager.placeSearchWithGoogleMap(
+					data.getLongitude(),
 					data.getLatiitude());
 				Optional<String> placeName;
 				if (!ret.isPresent()) {
@@ -112,9 +116,11 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				} else {
 					googlePlaceId = ret.get().getPlaces().get(0).getId();
 				}
-				placeName.ifPresent(pname -> {
+				if (placeName.isPresent()) {
+					String pname = placeName.get();
 					// 지역 이름 추출에 성공하면
 					log.info("placeName = {}", pname);
+					myPlaceName = pname;
 
 					Place place;
 					Optional<Place> placeOptional = placeRepository.findByPlaceName(pname);
@@ -127,8 +133,9 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 						place.addPhoto(photo);
 					}
 					log.info("place => {}", place);
-				});
-			});
+				}
+
+			}
 
 			// Google Vision API 호출
 			try {
@@ -172,7 +179,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			}
 
 			photo.setTitle(geminiApiService.generateTitle(colors, labels));
-			photo.setComment(geminiApiService.generateComment(colors, labels, photo.getPlace().getPlaceName()));
+			photo.setComment(geminiApiService.generateComment(colors, labels, myPlaceName));
 
 		}
 	}
