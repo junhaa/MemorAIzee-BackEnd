@@ -54,4 +54,13 @@ public class UserConverter {
 			.can_follow(canFollow)
 			.build();
 	}
+
+	public static UserResponseDTO.UpdateUserProfileResponseDTO toUpdateUserProfileResponseDTO(User user) {
+		return UserResponseDTO.UpdateUserProfileResponseDTO.builder()
+			.imageUrl(user.getImageUrl())
+			.userName(user.getUserName())
+			.introduction(user.getIntroduction())
+			.build();
+
+	}
 }

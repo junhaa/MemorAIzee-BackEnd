@@ -22,6 +22,7 @@ import memoraize.domain.album.entity.mapping.AlbumLiked;
 import memoraize.domain.review.entity.Review;
 import memoraize.domain.user.entity.mapping.Follow;
 import memoraize.domain.user.enums.LoginType;
+import memoraize.domain.user.web.dto.UserRequestDTO;
 import memoraize.global.entity.BaseEntity;
 
 @Entity
@@ -122,6 +123,17 @@ public class User extends BaseEntity {
 	// refresh token update
 	public void updateRefreshToken(String refreshToken) {
 		this.refreshToken = refreshToken;
+	}
+
+	public void updateProfile(UserRequestDTO.UpdateProfileRequestDTO request, String imageUrl) {
+		if (imageUrl != null)
+			this.imageUrl = imageUrl;
+
+		if (request.getUserName() != null && !request.getUserName().isEmpty())
+			this.userName = request.getUserName();
+
+		if (request.getIntroduction() != null && !request.getIntroduction().isEmpty())
+			this.introduction = request.getIntroduction();
 	}
 
 }

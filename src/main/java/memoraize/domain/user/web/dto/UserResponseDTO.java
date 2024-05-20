@@ -56,4 +56,16 @@ public class UserResponseDTO {
 		private Long user_id;
 	}
 
+	@Builder
+	@Getter
+	@NoArgsConstructor
+	@AllArgsConstructor
+	@ToString
+	public static class UpdateUserProfileResponseDTO {
+		private String imageUrl;
+
+		private String userName;
+		private String introduction;
+	}
+
 }
