@@ -17,7 +17,10 @@ import memoraize.domain.user.exception.UserNotExistException;
 import memoraize.domain.user.repository.FollowRepository;
 import memoraize.domain.user.repository.UserRepository;
 import memoraize.domain.user.web.dto.UserRequestDTO;
+import memoraize.domain.user.web.dto.UserResponseDTO;
+import memoraize.global.aws.s3.AmazonS3Manager;
 import memoraize.global.enums.statuscode.ErrorStatus;
+import memoraize.global.exception.GeneralException;
 
 @Slf4j
 @Service
@@ -26,6 +29,7 @@ import memoraize.global.enums.statuscode.ErrorStatus;
 public class UserCommandServiceImpl implements UserCommandService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
+	private final AmazonS3Manager amazonS3Manager;
 
 	private final FollowRepository followRepository;
 
@@ -73,6 +77,38 @@ public class UserCommandServiceImpl implements UserCommandService {
 				follow.getFollowing().removeFollowing(follow);
 				followRepository.delete(follow);
 			});
+	}
+
+	@Override
+	@Transactional
+	public UserResponseDTO.UpdateUserProfileResponseDTO updateProfile(User user,
+		UserRequestDTO.UpdateProfileRequestDTO request) {
+
+		if (request.getUserName() != null && !request.getUserName().isBlank() && !request.getUserName()
+			.equals(user.getUserName())) {
+			if (userRepository.existsByUserName(request.getUserName())) {
+				throw new GeneralException(ErrorStatus._EXIST_USERNAME);
+			}
+		}
+
+		String savedUrl = null;
+
+		if (request.getProfileImage() != null) {
+			byte[] imageByte;
+			try {
+				imageByte = request.getProfileImage().getBytes();
+			} catch (Exception e) {
+				log.error("Multipartfile byte 추출 중 에러가 발생했습니다. {}", e);
+				throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+			}
+			savedUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateProfileImageKeyName(),
+				request.getProfileImage(),
+				imageByte);
+		}
+
+		user.updateProfile(request, savedUrl);
+
+		return UserConverter.toUpdateUserProfileResponseDTO(userRepository.saveAndFlush(user));
 	}
 
 }

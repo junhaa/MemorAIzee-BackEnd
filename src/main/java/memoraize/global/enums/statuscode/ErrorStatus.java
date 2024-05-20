@@ -15,6 +15,8 @@ public enum ErrorStatus implements BaseCode {
 	_USER_NOT_EXIST(HttpStatus.BAD_REQUEST, "USER4001", "존재하지 않는 사용자입니다."),
 	_EXIST_LOGINID(HttpStatus.BAD_REQUEST, "USER4002", "이미 존재하는 로그인 ID 입니다."),
 
+	_EXIST_USERNAME(HttpStatus.BAD_REQUEST, "USER4003", "이미 존재하는 사용자 이름 입니다."),
+
 	// Album
 	_PHOTO_IMAGE_NOT_EXIST(HttpStatus.BAD_REQUEST, "ALBUM4001", "업로드된 사진이 없습니다."),
 	_PAGE_NOT_NEGATIVE(HttpStatus.BAD_REQUEST, "ALBUM4002", "page번호나 pageCount는 음수일 수 없습니다."),

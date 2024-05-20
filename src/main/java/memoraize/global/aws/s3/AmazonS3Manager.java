@@ -3,6 +3,7 @@ package memoraize.global.aws.s3;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -72,6 +73,11 @@ public class AmazonS3Manager {
 
 	public String generateMemoriesKeyName(String uuid) {
 		return amazonConfig.getMemoriesPath() + '/' + uuid;
+	}
+
+	public String generateProfileImageKeyName() {
+		String uuid = UUID.randomUUID().toString();
+		return "user/profile/" + uuid;
 	}
 
 }
