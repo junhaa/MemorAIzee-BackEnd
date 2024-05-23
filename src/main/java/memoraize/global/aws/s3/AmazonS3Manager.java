@@ -45,6 +45,24 @@ public class AmazonS3Manager {
 		return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
 	}
 
+	// MultipartFile은 한번만 사용 가능
+	public String uploadFile(String keyName, byte[] fileBytes, String contentType) {
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(fileBytes.length);
+		metadata.setContentType(contentType);
+
+		try {
+			PutObjectRequest objectRequest = new PutObjectRequest(amazonConfig.getBucket(), keyName,
+				new ByteArrayInputStream(fileBytes), metadata);
+			PutObjectResult putObjectResult = amazonS3.putObject(objectRequest);
+		} catch (Exception e) {
+			log.error("error at AmazonS3Manager uploadFile : {}", (Object)e.getStackTrace());
+			throw new S3FileSaveException(ErrorStatus._S3_FILE_SAVE_ERROR);
+		}
+
+		return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
+	}
+
 	public String uploadFile(String keyName, String localFileUrl) {
 		File file = new File(localFileUrl);
 		ObjectMetadata metadata = new ObjectMetadata();
@@ -78,6 +96,11 @@ public class AmazonS3Manager {
 	public String generateProfileImageKeyName() {
 		String uuid = UUID.randomUUID().toString();
 		return "user/profile/" + uuid;
+	}
+
+	public String generatePlacePhotoImageKeyName() {
+		String uuid = UUID.randomUUID().toString();
+		return "place/photo" + uuid;
 	}
 
 }
