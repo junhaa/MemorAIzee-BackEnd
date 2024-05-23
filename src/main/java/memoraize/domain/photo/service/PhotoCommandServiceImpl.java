@@ -118,9 +118,26 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 						colors.add(hashTag.getTagName());
 				}
 
-				photo.setTitle(geminiApiService.generateTitle(colors, labels));
-				photo.setComment(
-					geminiApiService.generateComment(colors, labels, place != null ? place.getPlaceName() : null));
+				CompletableFuture<String> titleCompletableFuture = CompletableFuture.supplyAsync(
+					() -> geminiApiService.generateTitle(colors, labels));
+				CompletableFuture<String> commentCompletableFuture = CompletableFuture.supplyAsync(
+					() -> geminiApiService.generateComment(colors, labels,
+						place != null ? place.getPlaceName() : null));
+
+				CompletableFuture<Void> geminiFutures = CompletableFuture.allOf(titleCompletableFuture,
+					commentCompletableFuture);
+
+				geminiFutures.thenRun(() -> {
+					try {
+						String title = titleCompletableFuture.get();
+						String comment = commentCompletableFuture.get();
+						photo.setTitle(title);
+						photo.setComment(comment);
+					} catch (Exception e) {
+						log.error("제미나이 데이터 적용 중 오류가 발생했습니다. {}", e.getMessage());
+						throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+					}
+				}).join();
 
 				photo.setPlace(place);
 				photo.setImageUrl(imageUrl);
