@@ -99,7 +99,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			placeCompletableFuture, hashTagsCompletableFuture);
 
 		allFutures.thenRun(() -> {
-
 			log.info("모든 스레드 처리가 완료되었습니다.");
 			try {
 				String imageUrl = saveImageCompletableFuture.get();
@@ -178,15 +177,16 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				place = placeOptional.get();
 				place.addPhoto(photo);
 			} else {
-				// 사진 저장
-				String referenceName = extractPhotoReference(
-					ret.get().getPlaces().get(0).getPhotos().get(0).getReferenceName());
-				if (referenceName != null) {
+				if (ret.isPresent()) {
+					// 사진 저장
+					String referenceName = extractPhotoReference(
+						ret.get().getPlaces().get(0).getPhotos().get(0).getReferenceName());
 					googlePlacePhotoUrl = googleMapManager.getPlacePhotoWithGoogleMap(referenceName);
 				}
 
 				place = PlaceConverter.toPlace(pname, googlePlaceId, googlePlacePhotoUrl);
 				place.addPhoto(photo);
+				log.info("bbb");
 			}
 			return place;
 		}
@@ -224,7 +224,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 		for (PhotoHashTag hashTag : hashTags) {
 			photo.addHashTag(hashTag);
 		}
-
+		log.info("aaaaa");
 		return hashTags;
 	}
 
@@ -232,6 +232,8 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 		// S3에 이미지 저장
 		String uuid = UUID.randomUUID().toString();
 		Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
+
+		log.info("ccc");
 		return amazonS3Manager.uploadFile(amazonS3Manager.generatePhotoImageKeyName(savedUuid), image,
 			imageBytes);
 	}
