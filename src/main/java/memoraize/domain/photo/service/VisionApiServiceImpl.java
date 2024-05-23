@@ -2,19 +2,19 @@ package memoraize.domain.photo.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
 import com.google.cloud.vision.v1.ColorInfo;
+import com.google.cloud.vision.v1.DominantColorsAnnotation;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Image;
@@ -33,7 +33,7 @@ import memoraize.global.exception.GeneralException;
 @Service
 @Getter
 public class VisionApiServiceImpl implements VisionApiService {
-	private Map<TagCategory, List<String>> resultMap = new HashMap<>();
+	private Map<TagCategory, List<String>> resultMap = new ConcurrentHashMap<>();
 	@Value("${cloud.google.vision-api.number-of-label}")
 	private int numberOfLable;
 
@@ -47,7 +47,6 @@ public class VisionApiServiceImpl implements VisionApiService {
 
 	@Override
 	public void connect(MultipartFile image, byte[] imageBytes) throws IOException {
-		GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
 		resultMap.clear();
 		resultMap.put(TagCategory.LABEL, detectLabel(image, imageBytes));
 		resultMap.put(TagCategory.COLOR, detectColor(image, imageBytes));
@@ -124,12 +123,21 @@ public class VisionApiServiceImpl implements VisionApiService {
 				}
 				int i = 0;
 
-				ColorInfo color = res.getImagePropertiesAnnotation().getDominantColors().getColorsList().get(0);
-				int r = (int)color.getColor().getRed();
-				int g = (int)color.getColor().getGreen();
-				int b = (int)color.getColor().getBlue();
-				result.add(rgbToHex(r, g, b));
+				DominantColorsAnnotation colors = res.getImagePropertiesAnnotation().getDominantColors();
+				for (ColorInfo color : colors.getColorsList()) {//리스트를 반환하나보네 public List<ColorInfo> getColorsList()
+					int r = (int)color.getColor().getRed();
+					int g = (int)color.getColor().getGreen();
+					int b = (int)color.getColor().getBlue();
+
+					result.add(rgbToHex(r, g, b));
+					if (++i >= numberOfProperties)
+						break;
+				}
+
 			}
+		} catch (Exception e) {
+			log.error("Vision Color 추출 중 에러가 발생했습니다. {}", e.getMessage());
+			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 		}
 
 		return result;

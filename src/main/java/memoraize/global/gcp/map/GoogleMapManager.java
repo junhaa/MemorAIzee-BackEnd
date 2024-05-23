@@ -47,10 +47,6 @@ public class GoogleMapManager {
 			.language("ko")
 			.await();
 
-		for (GeocodingResult res : results) {
-			log.info(res.formattedAddress);
-		}
-
 		if (results.length > 0) {
 			return Optional.ofNullable(results[0].formattedAddress);
 		} else

@@ -2,8 +2,10 @@ package memoraize.domain.album.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,8 @@ import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
 import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.service.PhotoCommandService;
+import memoraize.domain.review.entity.Place;
+import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.domain.slideshow.service.SlideShowCommandService;
 import memoraize.domain.user.entity.User;
 import memoraize.global.enums.statuscode.ErrorStatus;
@@ -33,7 +37,7 @@ import memoraize.global.exception.GeneralException;
 public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 
 	private final AlbumPostRepository albumPostRepository;
-
+	private final PlaceRepository placeRepository;
 	private final AlbumLikedRepository albumLikedRepository;
 	private final PhotoCommandService photoCommandService;
 	private final SlideShowCommandService slideShowCommandService;
@@ -42,6 +46,10 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 	@Transactional
 	public AlbumPostResponseDTO.AddAlbumPostResultDTO addAlbum(AlbumPostRequestDTO.addAlbumPostDTO request, User user) {
 
+		ForkJoinPool commonPool = ForkJoinPool.commonPool();
+		int parallelism = commonPool.getParallelism();
+
+		log.info("Thread Pool Size = {}", parallelism);
 		Album albumPost = AlbumPostConverter.toAlbumPost(request);
 		user.addAlbum(albumPost);
 
@@ -60,7 +68,6 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		// 모든 작업 완료 후 결과를 처리하기 위해 thenApply를 사용
 		CompletableFuture<List<Photo>> allResultsFuture = allFutures.thenApply(v -> {
 
-			log.info("여기까지넘어왔다");
 			List<Photo> results = new ArrayList<>();
 			for (CompletableFuture<Photo> future : createPhotoFutures) {
 				try {
@@ -73,15 +80,20 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 			return results;
 		});
 
-		try {
-			for (Photo photo : allResultsFuture.get()) {
-				albumPost.addPhoto(photo);
+		for (Photo photo : allResultsFuture.join()) {
+			log.info("photo.getPlace() = {}", photo.getPlace());
+			if (photo.getPlace() != null) {
+				Place place = photo.getPlace();
+				Optional<Place> placeOptional = placeRepository.findByPlaceName(place.getPlaceName());
+				if (placeOptional.isPresent()) {
+					place.addPhoto(photo);
+				} else {
+					Place save = placeRepository.save(place);
+					save.addPhoto(photo);
+				}
 			}
-		} catch (InterruptedException | ExecutionException e) {
-			log.error("photo 데이터를 합치는 도중 에러가 발생했습니다. 2 {}", e.getMessage());
-			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+			albumPost.addPhoto(photo);
 		}
-
 		albumPost = albumPostRepository.saveAndFlush(albumPost);
 
 		slideShowCommandService.makeSlideShow(albumPost);

@@ -89,7 +89,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 		// 장소 정보 추출 후 적용
 		CompletableFuture<Place> placeCompletableFuture = CompletableFuture.supplyAsync(
-			() -> getPlaceId(metadata, photo));
+			() -> getPlace(metadata, photo));
 
 		// 해쉬태그 추출
 		CompletableFuture<List<PhotoHashTag>> hashTagsCompletableFuture = CompletableFuture.supplyAsync(
@@ -99,13 +99,11 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			placeCompletableFuture, hashTagsCompletableFuture);
 
 		allFutures.thenRun(() -> {
-			try {
 
-				log.info("여기왔냐");
+			log.info("모든 스레드 처리가 완료되었습니다.");
+			try {
 				String imageUrl = saveImageCompletableFuture.get();
-				log.info("imageUrl = {}", imageUrl);
 				Place place = placeCompletableFuture.get();
-				log.info("place.getId() = {}", place.getId());
 				List<PhotoHashTag> hashTagList = hashTagsCompletableFuture.get();
 
 				// gemini title, comment
@@ -119,14 +117,14 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				}
 
 				photo.setTitle(geminiApiService.generateTitle(colors, labels));
-				photo.setComment(geminiApiService.generateComment(colors, labels, place.getPlaceName()));
+				photo.setComment(
+					geminiApiService.generateComment(colors, labels, place != null ? place.getPlaceName() : null));
 
 				photo.setPlace(place);
 				photo.setImageUrl(imageUrl);
 				for (PhotoHashTag hashTag : hashTagList) {
 					photo.addHashTag(hashTag);
 				}
-
 			} catch (Exception e) {
 				log.error("사진 저장 중 에러가 발생했습니다. {}", e.getMessage());
 				throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
@@ -137,7 +135,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 	}
 
 	@Transactional
-	public Place getPlaceId(Optional<memoraize.domain.photo.entity.Metadata> metadata, Photo photo) {
+	public Place getPlace(Optional<memoraize.domain.photo.entity.Metadata> metadata, Photo photo) {
 		if (metadata.isPresent()) {
 
 			memoraize.domain.photo.entity.Metadata data = metadata.get();
@@ -173,8 +171,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			}
 
 			String pname = placeName.get();
-			// 지역 이름 추출에 성공하면
-			log.info("placeName = {}", pname);
 
 			Place place;
 			Optional<Place> placeOptional = placeRepository.findByPlaceName(pname);
