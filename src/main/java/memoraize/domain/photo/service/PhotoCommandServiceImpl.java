@@ -97,15 +97,28 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 					data.getLongitude(),
 					data.getLatiitude());
 				Optional<String> placeName;
+
+				String googlePlaceId;
+				String googlePlacePhotoUrl = null;
+
 				if (!ret.isPresent()) {
+					googlePlaceId = null;
 					placeName = Optional.ofNullable(null);
 				} else {
 					placeName = Optional.ofNullable(
 						ret.get().getPlaces().get(0).getDisplayName().getText());
+					googlePlaceId = ret.get().getPlaces().get(0).getId();
+
+					// 사진 저장
+					String referenceName = extractPhotoReference(
+						ret.get().getPlaces().get(0).getPhotos().get(0).getReferenceName());
+					if (referenceName != null) {
+						googlePlacePhotoUrl = googleMapManager.getPlacePhotoWithGoogleMap(referenceName);
+					}
+
 				}
-				String googlePlaceId;
+
 				if (!placeName.isPresent()) {
-					googlePlaceId = null;
 					// reverseGeocoding
 					try {
 						placeName = googleMapManager.reverseGeocodingWithGoogleMap(data.getLatiitude(),
@@ -113,8 +126,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 					} catch (Exception e) {
 						throw new ExtractPlaceException(ErrorStatus._INTERNAL_SERVER_ERROR);
 					}
-				} else {
-					googlePlaceId = ret.get().getPlaces().get(0).getId();
 				}
 				if (placeName.isPresent()) {
 					String pname = placeName.get();
@@ -128,7 +139,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 						place = placeOptional.get();
 						place.addPhoto(photo);
 					} else {
-						place = PlaceConverter.toPlace(pname, googlePlaceId);
+						place = PlaceConverter.toPlace(pname, googlePlaceId, googlePlacePhotoUrl);
 						placeRepository.save(place);
 						place.addPhoto(photo);
 					}
@@ -229,5 +240,18 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 		File file = new File(System.getProperty("java.io.tmpdir") + "/" + multipartFile.getOriginalFilename());
 		multipartFile.transferTo(file);
 		return file;
+	}
+
+	private String extractPhotoReference(String referenceName) {
+		String marker = "photos/";
+		int index = referenceName.indexOf(marker);
+		String result;
+		if (index != -1) {
+			result = referenceName.substring(index + marker.length());
+		} else {
+			result = null;
+		}
+
+		return result;
 	}
 }
