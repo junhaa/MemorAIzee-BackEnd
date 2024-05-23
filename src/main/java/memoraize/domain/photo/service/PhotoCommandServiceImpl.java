@@ -100,7 +100,8 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 		allFutures.thenRun(() -> {
 			log.info("모든 스레드 처리가 완료되었습니다.");
-			log.info("1 = {}, 2 = {}, 3 = {}", placeCompletableFuture.isDone(), hashTagsCompletableFuture.isDone(),
+			log.info("place = {}, hashTag = {}, saveImage = {}", placeCompletableFuture.isDone(),
+				hashTagsCompletableFuture.isDone(),
 				saveImageCompletableFuture.isDone());
 			try {
 				String imageUrl = saveImageCompletableFuture.get();
@@ -186,7 +187,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				}
 
 				place = PlaceConverter.toPlace(pname, googlePlaceId, googlePlacePhotoUrl);
-				log.info("bbb");
 			}
 			return place;
 		}
@@ -224,7 +224,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 		for (PhotoHashTag hashTag : hashTags) {
 			photo.addHashTag(hashTag);
 		}
-		log.info("aaaaa");
 		return hashTags;
 	}
 
@@ -233,7 +232,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 		String uuid = UUID.randomUUID().toString();
 		Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
 
-		log.info("ccc");
 		return amazonS3Manager.uploadFile(amazonS3Manager.generatePhotoImageKeyName(savedUuid), image,
 			imageBytes);
 	}
