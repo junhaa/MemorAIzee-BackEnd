@@ -20,18 +20,17 @@ public class PhotoConverter {
 			.build();
 	}
 
-	public static Photo toPhoto(String imageUrl, String comment, Album album, String title) {
+	public static Photo toPhoto(String comment, Album album, String title) {
 		return Photo.builder()
 			.comment(comment)
-			.imageUrl(imageUrl)
 			.album(album)
 			.title(title)
 			.photoHashTagList(new ArrayList<>())
 			.build();
 	}
 
-	public static Photo toPhoto(String imageUrl, Album album) {
-		return toPhoto(imageUrl, "사진에 대한 내용을 작성해주세요.", album, "사진 제목을 작성해주세요.");
+	public static Photo toPhoto(Album album) {
+		return toPhoto("사진에 대한 내용을 작성해주세요.", album, "사진 제목을 작성해주세요.");
 	}
 
 	public static PhotoResponseDTO.PhotoPreviewDTO toPhotoPreviewDTO(Photo photo) {
@@ -56,7 +55,7 @@ public class PhotoConverter {
 			return null;
 		Metadata metadata = photo.getMetadata();
 		return PhotoResponseDTO.LocationDTO.builder()
-			.latitude(metadata.getLatiitude())
+			.latitude(metadata.getLatitude())
 			.longitude(metadata.getLongitude())
 			.place_id(place.getId())
 			.place_name(place.getPlaceName())
@@ -94,6 +93,5 @@ public class PhotoConverter {
 			.generated_by_ai(photoHashTag.isGenByAI())
 			.build();
 	}
-
 
 }

@@ -45,7 +45,6 @@ public class AmazonS3Manager {
 		return amazonS3.getUrl(amazonConfig.getBucket(), keyName).toString();
 	}
 
-	// MultipartFile은 한번만 사용 가능
 	public String uploadFile(String keyName, byte[] fileBytes, String contentType) {
 		ObjectMetadata metadata = new ObjectMetadata();
 		metadata.setContentLength(fileBytes.length);

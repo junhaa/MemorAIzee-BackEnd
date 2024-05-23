@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import memoraize.domain.photo.entity.Photo;
 
 @Entity
@@ -21,6 +22,7 @@ import memoraize.domain.photo.entity.Photo;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Place {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,7 +38,7 @@ public class Place {
 	@Column(name = "google_map_photo_url")
 	private String photoUrl;
 
-	@OneToMany(mappedBy = "place", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "place")
 	private List<Photo> photoList = new ArrayList<>();
 
 	@OneToMany(mappedBy = "place", cascade = CascadeType.ALL, orphanRemoval = true)

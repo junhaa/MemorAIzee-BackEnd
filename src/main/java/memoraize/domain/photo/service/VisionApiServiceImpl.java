@@ -2,15 +2,14 @@ package memoraize.domain.photo.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
@@ -26,13 +25,15 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.enums.TagCategory;
+import memoraize.global.enums.statuscode.ErrorStatus;
+import memoraize.global.exception.GeneralException;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 @Getter
 public class VisionApiServiceImpl implements VisionApiService {
-	private Map<TagCategory, List<String>> resultMap = new HashMap<>();
+	private Map<TagCategory, List<String>> resultMap = new ConcurrentHashMap<>();
 	@Value("${cloud.google.vision-api.number-of-label}")
 	private int numberOfLable;
 
@@ -46,7 +47,6 @@ public class VisionApiServiceImpl implements VisionApiService {
 
 	@Override
 	public void connect(MultipartFile image, byte[] imageBytes) throws IOException {
-		GoogleCredentials credentials = GoogleCredentials.getApplicationDefault();
 		resultMap.clear();
 		resultMap.put(TagCategory.LABEL, detectLabel(image, imageBytes));
 		resultMap.put(TagCategory.COLOR, detectColor(image, imageBytes));
@@ -76,27 +76,22 @@ public class VisionApiServiceImpl implements VisionApiService {
 			for (AnnotateImageResponse res : responses) {
 
 				if (res.hasError()) {
-					System.out.format("Error: %s%n", res.getError().getMessage());
-					return null;
+					log.error("라벨 추출 중 에러가 발생했습니다. {}", res.getError().getMessage());
+					throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 				}
 
 				int i = 0;
 				for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
 					result.add(annotation.getDescription());
-					System.out.println(annotation.getDescription());
 					if (++i >= numberOfLable)
 						break;
 				}
 
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("이미지 라벨 분석 도중 오류가 발생했습니다.");
+			log.error("라벨 추출 중 에러가 발생했습니다. {}", e.getMessage());
+			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 		}
-		for (String st : result) {
-			System.out.println(st);
-		}
-
 		return result;
 	}
 
@@ -123,8 +118,8 @@ public class VisionApiServiceImpl implements VisionApiService {
 
 			for (AnnotateImageResponse res : responses) {
 				if (res.hasError()) {
-					System.out.format("Error: %s%n", res.getError().getMessage());
-					return null;
+					log.error("Vision Color 추출 중 에러가 발생했습니다. {}", res.getError().getMessage());
+					throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 				}
 				int i = 0;
 
@@ -134,20 +129,15 @@ public class VisionApiServiceImpl implements VisionApiService {
 					int g = (int)color.getColor().getGreen();
 					int b = (int)color.getColor().getBlue();
 
-					System.out.format(
-						"fraction: %f%nr: %d, g: %d, b: %d%n",
-						color.getPixelFraction(),
-						r, g, b);
-
 					result.add(rgbToHex(r, g, b));
 					if (++i >= numberOfProperties)
 						break;
 				}
 
 			}
-		}
-		for (String st : result) {
-			System.out.println(st);
+		} catch (Exception e) {
+			log.error("Vision Color 추출 중 에러가 발생했습니다. {}", e.getMessage());
+			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 		}
 
 		return result;

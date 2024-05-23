@@ -47,10 +47,6 @@ public class GoogleMapManager {
 			.language("ko")
 			.await();
 
-		for (GeocodingResult res : results) {
-			log.info(res.formattedAddress);
-		}
-
 		if (results.length > 0) {
 			return Optional.ofNullable(results[0].formattedAddress);
 		} else
@@ -99,7 +95,7 @@ public class GoogleMapManager {
 		HttpClient client = HttpClient.newBuilder()
 			.followRedirects(HttpClient.Redirect.ALWAYS)
 			.build();
-	
+
 		try {
 			HttpRequest request = HttpRequest.newBuilder()
 				.uri(new URI(
@@ -107,8 +103,6 @@ public class GoogleMapManager {
 						+ "&key=" + apiKey))
 				.GET()
 				.build();
-
-			log.info(client.send(request, HttpResponse.BodyHandlers.ofString()).body());
 			return client.send(request, HttpResponse.BodyHandlers.ofByteArray()).body();
 		} catch (Exception e) {
 			log.error("구글 장소 사진 요청 중 오류가 발생했습니다. {}", e);

@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +23,6 @@ import com.drew.metadata.exif.GpsDirectory;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import memoraize.domain.album.entity.Album;
-import memoraize.domain.photo.converter.PhotoConverter;
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.entity.PhotoHashTag;
 import memoraize.domain.photo.entity.Uuid;
@@ -36,6 +35,7 @@ import memoraize.domain.review.entity.Place;
 import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.global.aws.s3.AmazonS3Manager;
 import memoraize.global.enums.statuscode.ErrorStatus;
+import memoraize.global.exception.GeneralException;
 import memoraize.global.gcp.map.GoogleMapManager;
 import memoraize.global.gcp.map.dto.GooglePlaceApiResponseDTO;
 
@@ -63,136 +63,194 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 	@Override
 	@Transactional
-	public void savePhotoImages(List<MultipartFile> request, Album album) {
+	public Photo savePhotoImages(MultipartFile image) {
+		byte[] imageBytes = null;
 
-		for (MultipartFile image : request) {
-			byte[] imageBytes = null;
+		try {
+			imageBytes = image.getBytes();
+		} catch (IOException e) {
+			log.error("imageByte 추출 중 오류 발생 {}", e.getMessage());
+			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+		}
+		byte[] myImageByte = imageBytes;
+
+		Photo photo = Photo.builder()
+			.comment("사진에 대한 내용을 작성해주세요.")
+			.title("사진 제목을 작성해주세요.")
+			.photoHashTagList(new ArrayList<>())
+			.build();
+
+		// 이미지 사진 S3 저장
+		CompletableFuture<String> saveImageCompletableFuture = CompletableFuture.supplyAsync(
+			() -> savePhotoImage(image, myImageByte));
+
+		// 이미지 파일 위치 정보 추출
+		Optional<memoraize.domain.photo.entity.Metadata> metadata = extractMetadata(image);
+
+		// 장소 정보 추출 후 적용
+		CompletableFuture<Place> placeCompletableFuture = CompletableFuture.supplyAsync(
+			() -> getPlace(metadata, photo));
+
+		// 해쉬태그 추출
+		CompletableFuture<List<PhotoHashTag>> hashTagsCompletableFuture = CompletableFuture.supplyAsync(
+			() -> getPhotoHashTags(image, myImageByte, photo));
+
+		CompletableFuture<Void> allFutures = CompletableFuture.allOf(saveImageCompletableFuture,
+			placeCompletableFuture, hashTagsCompletableFuture);
+
+		allFutures.thenRun(() -> {
+			log.info("모든 스레드 처리가 완료되었습니다.");
+			log.info("place = {}, hashTag = {}, saveImage = {}", placeCompletableFuture.isDone(),
+				hashTagsCompletableFuture.isDone(),
+				saveImageCompletableFuture.isDone());
 			try {
-				imageBytes = image.getBytes();
-			} catch (IOException e) {
-				log.error("imageByte 추출 중 오류 발생");
-				throw new RuntimeException("MultipartFile byte extract error");
+				String imageUrl = saveImageCompletableFuture.get();
+				Place place = placeCompletableFuture.get();
+				List<PhotoHashTag> hashTagList = hashTagsCompletableFuture.get();
+
+				// gemini title, comment
+				List<String> labels = new ArrayList<>();
+				List<String> colors = new ArrayList<>();
+				for (PhotoHashTag hashTag : hashTagList) {
+					if (hashTag.getTagCategorie() == TagCategory.LABEL)
+						labels.add(hashTag.getTagName());
+					if (hashTag.getTagCategorie() == TagCategory.COLOR)
+						colors.add(hashTag.getTagName());
+				}
+
+				CompletableFuture<String> titleCompletableFuture = CompletableFuture.supplyAsync(
+					() -> geminiApiService.generateTitle(colors, labels));
+				CompletableFuture<String> commentCompletableFuture = CompletableFuture.supplyAsync(
+					() -> geminiApiService.generateComment(colors, labels,
+						place != null ? place.getPlaceName() : null));
+
+				CompletableFuture<Void> geminiFutures = CompletableFuture.allOf(titleCompletableFuture,
+					commentCompletableFuture);
+
+				geminiFutures.thenRun(() -> {
+					try {
+						String title = titleCompletableFuture.get();
+						String comment = commentCompletableFuture.get();
+						photo.setTitle(title);
+						photo.setComment(comment);
+					} catch (Exception e) {
+						log.error("제미나이 데이터 적용 중 오류가 발생했습니다. {}", e.getMessage());
+						throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+					}
+				}).join();
+
+				photo.setPlace(place);
+				photo.setImageUrl(imageUrl);
+				for (PhotoHashTag hashTag : hashTagList) {
+					photo.addHashTag(hashTag);
+				}
+			} catch (Exception e) {
+				log.error("사진 저장 중 에러가 발생했습니다. {}", e.getMessage());
+				throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 			}
 
-			// S3에 이미지 저장
-			String uuid = UUID.randomUUID().toString();
-			Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
-			String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generatePhotoImageKeyName(savedUuid), image,
-				imageBytes);
-			log.info("S3 Saved Image URL = {}", imageUrl);
-			Photo photo = PhotoConverter.toPhoto(imageUrl, album);
-			album.addPhoto(photo);
+		}).join();
+		return photo;
+	}
 
-			// 이미지 파일 위치 정보 추출
-			Optional<memoraize.domain.photo.entity.Metadata> metadata = extractMetadata(image);
+	@Transactional
+	public Place getPlace(Optional<memoraize.domain.photo.entity.Metadata> metadata, Photo photo) {
+		if (metadata.isPresent()) {
 
-			String myPlaceName = null;
+			memoraize.domain.photo.entity.Metadata data = metadata.get();
+			photo.setMetadata(data);
 
-			// Google map => 위치 호출
-			if (metadata.isPresent()) {
-				memoraize.domain.photo.entity.Metadata data = metadata.get();
-				photo.setMetadata(data);
-				// nearby search
-				Optional<GooglePlaceApiResponseDTO> ret = googleMapManager.placeSearchWithGoogleMap(
-					data.getLongitude(),
-					data.getLatiitude());
-				Optional<String> placeName;
+			// nearby search
+			Optional<GooglePlaceApiResponseDTO> ret = googleMapManager.placeSearchWithGoogleMap(
+				data.getLongitude(),
+				data.getLatitude());
+			Optional<String> placeName;
 
-				String googlePlaceId;
-				String googlePlacePhotoUrl = null;
+			String googlePlaceId;
+			String googlePlacePhotoUrl = null;
 
-				if (!ret.isPresent()) {
-					googlePlaceId = null;
-					placeName = Optional.ofNullable(null);
-				} else {
-					placeName = Optional.ofNullable(
-						ret.get().getPlaces().get(0).getDisplayName().getText());
-					googlePlaceId = ret.get().getPlaces().get(0).getId();
+			if (!ret.isPresent()) {
+				// 주변 검색 장소가 없는 경우
+				googlePlaceId = null;
+				placeName = Optional.ofNullable(null);
+			} else {
+				placeName = Optional.ofNullable(
+					ret.get().getPlaces().get(0).getDisplayName().getText());
+				googlePlaceId = ret.get().getPlaces().get(0).getId();
+			}
 
+			if (!placeName.isPresent()) {
+				// reverseGeocoding
+				try {
+					placeName = googleMapManager.reverseGeocodingWithGoogleMap(data.getLatitude(),
+						data.getLongitude());
+				} catch (Exception e) {
+					throw new ExtractPlaceException(ErrorStatus._INTERNAL_SERVER_ERROR);
+				}
+			}
+
+			String pname = placeName.get();
+
+			Place place;
+			Optional<Place> placeOptional = placeRepository.findByPlaceName(pname);
+			if (placeOptional.isPresent()) {
+				place = placeOptional.get();
+			} else {
+				if (ret.isPresent()) {
 					// 사진 저장
 					String referenceName = extractPhotoReference(
 						ret.get().getPlaces().get(0).getPhotos().get(0).getReferenceName());
-					if (referenceName != null) {
-						googlePlacePhotoUrl = googleMapManager.getPlacePhotoWithGoogleMap(referenceName);
-					}
-
+					googlePlacePhotoUrl = googleMapManager.getPlacePhotoWithGoogleMap(referenceName);
 				}
 
-				if (!placeName.isPresent()) {
-					// reverseGeocoding
-					try {
-						placeName = googleMapManager.reverseGeocodingWithGoogleMap(data.getLatiitude(),
-							data.getLongitude());
-					} catch (Exception e) {
-						throw new ExtractPlaceException(ErrorStatus._INTERNAL_SERVER_ERROR);
-					}
-				}
-				if (placeName.isPresent()) {
-					String pname = placeName.get();
-					// 지역 이름 추출에 성공하면
-					log.info("placeName = {}", pname);
-					myPlaceName = pname;
-
-					Place place;
-					Optional<Place> placeOptional = placeRepository.findByPlaceName(pname);
-					if (placeOptional.isPresent()) {
-						place = placeOptional.get();
-						place.addPhoto(photo);
-					} else {
-						place = PlaceConverter.toPlace(pname, googlePlaceId, googlePlacePhotoUrl);
-						placeRepository.save(place);
-						place.addPhoto(photo);
-					}
-					log.info("place => {}", place);
-				}
-
+				place = PlaceConverter.toPlace(pname, googlePlaceId, googlePlacePhotoUrl);
 			}
-
-			// Google Vision API 호출
-			try {
-				visionApiService.connect(image, imageBytes);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-			Map<TagCategory, List<String>> resultMap = visionApiService.getResultMap();
-			Set<TagCategory> categorySet = resultMap.keySet();
-			List<PhotoHashTag> hashTags = new ArrayList<>();
-
-			//해시태그 리스트 생성
-			for (TagCategory category : categorySet) {
-				for (String tag : resultMap.get(category)) {
-					PhotoHashTag photoHashTag = PhotoHashTag.builder()
-						.tagName(tag)
-						.tagCategorie(category)
-						.genByAI(true)
-						.build();
-
-					hashTags.add(photoHashTag);
-				}
-				if (category == TagCategory.COLOR)
-					break;
-			}
-
-			// TODO : 비동기 처리 시 어떻게 변경할 것인지
-			for (PhotoHashTag hashTag : hashTags) {
-				photo.addHashTag(hashTag);
-			}
-
-			//photo title, comment 생성
-			//photo title, comment
-			List<String> labels = new ArrayList<>();
-			List<String> colors = new ArrayList<>();
-			for (PhotoHashTag hashTag : hashTags) {//이렇게 써도 되려나..
-				if (hashTag.getTagCategorie() == TagCategory.LABEL)
-					labels.add(hashTag.getTagName());
-				if (hashTag.getTagCategorie() == TagCategory.COLOR)
-					colors.add(hashTag.getTagName());
-			}
-
-			photo.setTitle(geminiApiService.generateTitle(colors, labels));
-			photo.setComment(geminiApiService.generateComment(colors, labels, myPlaceName));
-
+			return place;
 		}
+		return null;
+	}
+
+	@Transactional
+	public List<PhotoHashTag> getPhotoHashTags(MultipartFile image, byte[] imageBytes, Photo photo) {
+
+		// Google Vision API 호출
+		try {
+			visionApiService.connect(image, imageBytes);
+		} catch (IOException e) {
+			log.error("Google Vision API 호출 중 오류가 발생했습니다. {}", e);
+			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+		}
+
+		Map<TagCategory, List<String>> resultMap = visionApiService.getResultMap();
+		Set<TagCategory> categorySet = resultMap.keySet();
+		List<PhotoHashTag> hashTags = new ArrayList<>();
+
+		//해시태그 리스트 생성
+		for (TagCategory category : categorySet) {
+			for (String tag : resultMap.get(category)) {
+				PhotoHashTag photoHashTag = PhotoHashTag.builder()
+					.tagName(tag)
+					.tagCategorie(category)
+					.genByAI(true)
+					.build();
+
+				hashTags.add(photoHashTag);
+			}
+		}
+
+		for (PhotoHashTag hashTag : hashTags) {
+			photo.addHashTag(hashTag);
+		}
+		return hashTags;
+	}
+
+	public String savePhotoImage(MultipartFile image, byte[] imageBytes) {
+		// S3에 이미지 저장
+		String uuid = UUID.randomUUID().toString();
+		Uuid savedUuid = uuidRepository.save(Uuid.builder().uuid(uuid).build());
+
+		return amazonS3Manager.uploadFile(amazonS3Manager.generatePhotoImageKeyName(savedUuid), image,
+			imageBytes);
 	}
 
 	public static Optional<memoraize.domain.photo.entity.Metadata> extractMetadata(MultipartFile file) {
@@ -221,7 +279,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 			if (geoLocation != null && date != null) {
 				memoraize.domain.photo.entity.Metadata extractedMetadata = memoraize.domain.photo.entity.Metadata.builder()
-					.latiitude(geoLocation.getLatitude())
+					.latitude(geoLocation.getLatitude())
 					.longitude(geoLocation.getLongitude())
 					.date(date)
 					.build();
