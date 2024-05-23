@@ -2,7 +2,6 @@ package memoraize.domain.slideshow.service;
 
 import java.util.ArrayList;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +21,6 @@ public class SlideShowCommandServiceImpl implements SlideShowCommandService {
 	private final SlideShowChunkRepository slideShowChunkRepository;
 	private final CloudinaryService cloudinaryService;
 
-	@Async
 	@Override
 	public void makeSlideShow(Album album) {
 		Memories memories = Memories.builder()
