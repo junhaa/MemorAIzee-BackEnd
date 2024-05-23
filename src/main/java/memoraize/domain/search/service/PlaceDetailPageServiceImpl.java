@@ -14,7 +14,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
+import memoraize.domain.photo.exception.PlaceNotExistException;
 import memoraize.domain.review.converter.ReviewConverter;
+import memoraize.domain.review.entity.Place;
 import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.domain.review.repository.ReviewRepository;
 import memoraize.domain.review.web.dto.ReviewResponseDTO;
@@ -37,6 +39,8 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService {
 	// this is for getting place detail && mapping marker
 	@Override
 	public PlaceDetailResponseDto.PlaceDetail getPlaceDetail(Long placeId) {
+		Place place = placeRepository.findById(placeId).orElseThrow(() -> new PlaceNotExistException());
+
 		String place_id = placeRepository.findById(placeId).get().getGoogleMapId();
 
 		// placeName, geometry, address, phoneNumber, placeIconInfo, businessStatus, placeUrl
@@ -111,6 +115,7 @@ public class PlaceDetailPageServiceImpl implements PlaceDetailPageService {
 			placeDetailResponseDto.setPlaceName(name);
 			placeDetailResponseDto.setAddress(formatted_address);
 			placeDetailResponseDto.setPhoneNumber(international_phone_number);
+			placeDetailResponseDto.setPlacePhotoUrl(place.getPhotoUrl());
 
 			placeIconInfo.setIcon(icon);
 			placeIconInfo.setBgColor(icon_background_color);
