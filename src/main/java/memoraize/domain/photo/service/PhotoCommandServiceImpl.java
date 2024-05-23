@@ -100,6 +100,8 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 		allFutures.thenRun(() -> {
 			log.info("모든 스레드 처리가 완료되었습니다.");
+			log.info("1 = {}, 2 = {}, 3 = {}", placeCompletableFuture.isDone(), hashTagsCompletableFuture.isDone(),
+				saveImageCompletableFuture.isDone());
 			try {
 				String imageUrl = saveImageCompletableFuture.get();
 				Place place = placeCompletableFuture.get();
@@ -175,7 +177,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 			Optional<Place> placeOptional = placeRepository.findByPlaceName(pname);
 			if (placeOptional.isPresent()) {
 				place = placeOptional.get();
-				place.addPhoto(photo);
 			} else {
 				if (ret.isPresent()) {
 					// 사진 저장
@@ -185,7 +186,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				}
 
 				place = PlaceConverter.toPlace(pname, googlePlaceId, googlePlacePhotoUrl);
-				place.addPhoto(photo);
 				log.info("bbb");
 			}
 			return place;

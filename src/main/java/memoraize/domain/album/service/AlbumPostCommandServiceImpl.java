@@ -81,19 +81,23 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		});
 
 		for (Photo photo : allResultsFuture.join()) {
-			log.info("photo.getPlace() = {}", photo.getPlace());
 			if (photo.getPlace() != null) {
 				Place place = photo.getPlace();
+
 				Optional<Place> placeOptional = placeRepository.findByPlaceName(place.getPlaceName());
 				if (placeOptional.isPresent()) {
+					place = placeOptional.get();
 					place.addPhoto(photo);
 				} else {
 					Place save = placeRepository.save(place);
 					save.addPhoto(photo);
+
 				}
 			}
+
 			albumPost.addPhoto(photo);
 		}
+
 		albumPost = albumPostRepository.saveAndFlush(albumPost);
 
 		slideShowCommandService.makeSlideShow(albumPost);
