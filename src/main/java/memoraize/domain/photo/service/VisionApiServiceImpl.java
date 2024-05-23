@@ -15,7 +15,6 @@ import com.google.cloud.vision.v1.AnnotateImageRequest;
 import com.google.cloud.vision.v1.AnnotateImageResponse;
 import com.google.cloud.vision.v1.BatchAnnotateImagesResponse;
 import com.google.cloud.vision.v1.ColorInfo;
-import com.google.cloud.vision.v1.DominantColorsAnnotation;
 import com.google.cloud.vision.v1.EntityAnnotation;
 import com.google.cloud.vision.v1.Feature;
 import com.google.cloud.vision.v1.Image;
@@ -26,6 +25,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.enums.TagCategory;
+import memoraize.global.enums.statuscode.ErrorStatus;
+import memoraize.global.exception.GeneralException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -76,27 +77,22 @@ public class VisionApiServiceImpl implements VisionApiService {
 			for (AnnotateImageResponse res : responses) {
 
 				if (res.hasError()) {
-					System.out.format("Error: %s%n", res.getError().getMessage());
-					return null;
+					log.error("라벨 추출 중 에러가 발생했습니다. {}", res.getError().getMessage());
+					throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 				}
 
 				int i = 0;
 				for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
 					result.add(annotation.getDescription());
-					System.out.println(annotation.getDescription());
 					if (++i >= numberOfLable)
 						break;
 				}
 
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
-			throw new RuntimeException("이미지 라벨 분석 도중 오류가 발생했습니다.");
+			log.error("라벨 추출 중 에러가 발생했습니다. {}", e.getMessage());
+			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 		}
-		for (String st : result) {
-			System.out.println(st);
-		}
-
 		return result;
 	}
 
@@ -123,31 +119,17 @@ public class VisionApiServiceImpl implements VisionApiService {
 
 			for (AnnotateImageResponse res : responses) {
 				if (res.hasError()) {
-					System.out.format("Error: %s%n", res.getError().getMessage());
-					return null;
+					log.error("Vision Color 추출 중 에러가 발생했습니다. {}", res.getError().getMessage());
+					throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 				}
 				int i = 0;
 
-				DominantColorsAnnotation colors = res.getImagePropertiesAnnotation().getDominantColors();
-				for (ColorInfo color : colors.getColorsList()) {//리스트를 반환하나보네 public List<ColorInfo> getColorsList()
-					int r = (int)color.getColor().getRed();
-					int g = (int)color.getColor().getGreen();
-					int b = (int)color.getColor().getBlue();
-
-					System.out.format(
-						"fraction: %f%nr: %d, g: %d, b: %d%n",
-						color.getPixelFraction(),
-						r, g, b);
-
-					result.add(rgbToHex(r, g, b));
-					if (++i >= numberOfProperties)
-						break;
-				}
-
+				ColorInfo color = res.getImagePropertiesAnnotation().getDominantColors().getColorsList().get(0);
+				int r = (int)color.getColor().getRed();
+				int g = (int)color.getColor().getGreen();
+				int b = (int)color.getColor().getBlue();
+				result.add(rgbToHex(r, g, b));
 			}
-		}
-		for (String st : result) {
-			System.out.println(st);
 		}
 
 		return result;

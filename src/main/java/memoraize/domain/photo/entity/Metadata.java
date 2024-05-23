@@ -27,7 +27,7 @@ public class Metadata {
 	private Long id;
 
 	@Column(name = "metadata_latiitude", nullable = false)
-	private Double latiitude;
+	private Double latitude;
 
 	@Column(name = "metadata_longitude", nullable = false)
 	private Double longitude;
