@@ -1,0 +1,74 @@
+package memoraize.domain.album.converter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+
+import lombok.extern.slf4j.Slf4j;
+import memoraize.domain.album.entity.Album;
+import memoraize.domain.album.web.dto.AlbumPostRequestDTO;
+import memoraize.domain.album.web.dto.AlbumPostResponseDTO;
+import memoraize.domain.photo.web.dto.PhotoResponseDTO;
+
+@Slf4j
+public class AlbumPostConverter {
+	public static Album toAlbumPost(AlbumPostRequestDTO.addAlbumPostDTO request) {
+		return Album.builder()
+			.albumName(request.getAlbumName())
+			.albumInfo(request.getAlbumInfo())
+			.albumAccess(request.getAlbumAccess())
+			.photoImages(new ArrayList<>())
+			.isDeleted(false)
+			.viewCount(0L)
+			.build();
+	}
+
+	public static AlbumPostResponseDTO.AddAlbumPostResultDTO toAddAlbumPostResultDTO(Album album) {
+		return AlbumPostResponseDTO.AddAlbumPostResultDTO.builder()
+			.albumId(album.getId())
+			.createdAt(album.getCreatedAt())
+			.build();
+	}
+
+	public static AlbumPostResponseDTO.AlbumPostPreviewResultPageDTO toAlbumPostPreviewResultPageDTO(
+		Page<Album> albumPage) {
+		List<AlbumPostResponseDTO.AlbumPostPreviewResultDTO> albumList = albumPage.stream()
+			.map(AlbumPostConverter::toAlbumPostPreviewResultDTO)
+			.collect(
+				Collectors.toList());
+		return AlbumPostResponseDTO.AlbumPostPreviewResultPageDTO.builder()
+			.albums(albumList)
+			.listSize(albumPage.getSize())
+			.isFirst(albumPage.isFirst())
+			.isLast(albumPage.isLast())
+			.totalPage(albumPage.getTotalPages())
+			.totalElements(albumPage.getTotalElements())
+			.build();
+
+	}
+
+	public static AlbumPostResponseDTO.AlbumPostPreviewResultDTO toAlbumPostPreviewResultDTO(Album album) {
+		return AlbumPostResponseDTO.AlbumPostPreviewResultDTO.builder()
+			.albumId(album.getId())
+			.mainImageUrl(album.getPhotoImages().get(0).getImageUrl())
+			.albumName(album.getAlbumName())
+			.createdAt(album.getCreatedAt())
+			.build();
+	}
+
+	public static AlbumPostResponseDTO.AlbumDetailResponseDTO toAlbumDetailResponseDTO(Album album,
+		List<PhotoResponseDTO.PhotoPreviewDTO> photoList) {
+		return AlbumPostResponseDTO.AlbumDetailResponseDTO.builder()
+			.album_id(album.getId())
+			.album_title(album.getAlbumName())
+			.album_info(album.getAlbumInfo())
+			.photo_count((long)photoList.size())
+			.view_count(album.getViewCount())
+			.photo_list(photoList)
+			.created_at(album.getCreatedAt())
+			.build();
+	}
+
+}
