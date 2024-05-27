@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface GeminiApiService {
 
-    public String generateTitle(List<String> colors, List<String> labels);
+    public String generateTitle(List<String> colors, List<String> labels,String place);
     String generateComment(List<String> colors, List<String> labels, String place);
 
 }
