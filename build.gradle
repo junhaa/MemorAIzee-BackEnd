@@ -38,6 +38,9 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+    // ElevenLabs API
+    implementation('net.andrewcpu:elevenlabs-api:2.7.8')
+
     // Metadata-Extractor
     implementation 'com.drewnoakes:metadata-extractor:2.16.0'
     implementation 'com.adobe.xmp:xmpcore:6.1.11'
@@ -68,6 +71,15 @@ dependencies {
 
     //ffmpeg wrapper
     implementation 'org.bytedeco:javacv-platform:1.5.10'
+
+
+    //logging
+    implementation 'org.springframework.boot:spring-boot-starter-log4j2'
+    modules {
+        module("org.springframework.boot:spring-boot-starter-logging") {
+            replacedBy("org.springframework.boot:spring-boot-starter-log4j2")
+        }
+    }
 
 
 }

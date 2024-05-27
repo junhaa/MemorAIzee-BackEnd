@@ -23,6 +23,8 @@ public enum ErrorStatus implements BaseCode {
 	_INVALID_SORT_STATUS(HttpStatus.BAD_REQUEST, "ALBUM4003", "정렬 기준이 올바르지 않습니다."),
 	_ALBUM_FORBIDEN(HttpStatus.FORBIDDEN, "ALBUM4004", "앨범에 대한 접근 권한이 없습니다."),
 	_ALBUM_NOT_EXIST(HttpStatus.BAD_REQUEST, "ALBUM4005", "존재하지 않는 앨범입니다."),
+	// ElevenLabs
+	_FILE_CONVERT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "FILE5001", "파일 변환에 실패했습니다."),
 
 	//Photo
 	_PHOTO_NOT_EXIST(HttpStatus.BAD_REQUEST, "PHOTO4001", "존재하지 않는 사진입니다."),
