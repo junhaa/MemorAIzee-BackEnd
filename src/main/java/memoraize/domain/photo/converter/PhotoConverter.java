@@ -82,6 +82,7 @@ public class PhotoConverter {
 			.location(toLocationDTO(photo.getPlace(), photo))
 			.hashTage_list(tagResponseDTOList)
 			.photo_color_code(colorCode)
+			.narration_url(photo.getPhotoNarration() == null ? null : photo.getPhotoNarration().getNarrationUrl())
 			.build();
 
 	}

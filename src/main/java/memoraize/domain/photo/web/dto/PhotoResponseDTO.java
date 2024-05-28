@@ -56,6 +56,7 @@ public class PhotoResponseDTO {
 		private LocationDTO location;
 		private List<HashTagResponseDTO> hashTage_list;
 		private String photo_color_code;
+		private String narration_url;
 	}
 
 	@Builder

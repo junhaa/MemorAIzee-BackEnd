@@ -72,6 +72,8 @@ dependencies {
     //ffmpeg wrapper
     implementation 'org.bytedeco:javacv-platform:1.5.10'
 
+    // fileConverter
+    implementation 'org.springframework:spring-test:5.3.20'
 
     //logging
     implementation 'org.springframework.boot:spring-boot-starter-log4j2'

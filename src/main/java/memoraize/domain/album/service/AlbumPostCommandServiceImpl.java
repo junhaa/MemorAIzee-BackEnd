@@ -27,6 +27,7 @@ import memoraize.domain.review.entity.Place;
 import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.domain.slideshow.service.SlideShowCommandService;
 import memoraize.domain.user.entity.User;
+import memoraize.domain.voice.service.VoiceCommandService;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
@@ -41,6 +42,8 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 	private final AlbumLikedRepository albumLikedRepository;
 	private final PhotoCommandService photoCommandService;
 	private final SlideShowCommandService slideShowCommandService;
+
+	private final VoiceCommandService voiceCommandService;
 
 	@Override
 	@Transactional
@@ -99,6 +102,14 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		}
 
 		albumPost = albumPostRepository.saveAndFlush(albumPost);
+
+		// 만약 유저가 저장한 음성 녹음이 있으면 내래이션 생성
+		if (user.getVoice() != null) {
+			for (Photo photo : albumPost.getPhotoImages()) {
+				// Async
+				voiceCommandService.createPhotoNarrationAndSave(photo, user.getVoice().getVoiceKey());
+			}
+		}
 
 		slideShowCommandService.makeSlideShow(albumPost);
 
