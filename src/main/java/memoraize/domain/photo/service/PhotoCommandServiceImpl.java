@@ -117,7 +117,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				}
 
 				CompletableFuture<String> titleCompletableFuture = CompletableFuture.supplyAsync(
-					() -> geminiApiService.generateTitle(colors, labels));
+					() -> geminiApiService.generateTitle(colors, labels,place != null ? place.getPlaceName() : null));
 				CompletableFuture<String> commentCompletableFuture = CompletableFuture.supplyAsync(
 					() -> geminiApiService.generateComment(colors, labels,
 						place != null ? place.getPlaceName() : null));
