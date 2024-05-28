@@ -211,15 +211,15 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 	@Transactional
 	public List<PhotoHashTag> getPhotoHashTags(MultipartFile image, byte[] imageBytes, Photo photo) {
 
+		Map<TagCategory, List<String>> resultMap;
 		// Google Vision API 호출
 		try {
-			visionApiService.connect(image, imageBytes);
+			resultMap = visionApiService.connect(image, imageBytes);
 		} catch (IOException e) {
 			log.error("Google Vision API 호출 중 오류가 발생했습니다. {}", e);
 			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 		}
 
-		Map<TagCategory, List<String>> resultMap = visionApiService.getResultMap();
 		Set<TagCategory> categorySet = resultMap.keySet();
 		List<PhotoHashTag> hashTags = new ArrayList<>();
 

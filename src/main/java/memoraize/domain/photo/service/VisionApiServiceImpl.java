@@ -2,9 +2,9 @@ package memoraize.domain.photo.service;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +34,6 @@ import memoraize.global.exception.GeneralException;
 @Getter
 public class VisionApiServiceImpl implements VisionApiService {
 	private static final Logger log = LogManager.getLogger(VisionApiServiceImpl.class);
-	private Map<TagCategory, List<String>> resultMap = new ConcurrentHashMap<>();
 	@Value("${cloud.google.vision-api.number-of-label}")
 	private int numberOfLable;
 
@@ -42,15 +41,11 @@ public class VisionApiServiceImpl implements VisionApiService {
 	private int numberOfProperties;
 
 	@Override
-	public Map<TagCategory, List<String>> getResultMap() {
-		return resultMap;
-	}
-
-	@Override
-	public void connect(MultipartFile image, byte[] imageBytes) throws IOException {
-		resultMap.clear();
+	public Map<TagCategory, List<String>> connect(MultipartFile image, byte[] imageBytes) throws IOException {
+		Map<TagCategory, List<String>> resultMap = new HashMap<>();
 		resultMap.put(TagCategory.LABEL, detectLabel(image, imageBytes));
 		resultMap.put(TagCategory.COLOR, detectColor(image, imageBytes));
+		return resultMap;
 	}
 
 	@Override
