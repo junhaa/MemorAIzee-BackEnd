@@ -9,9 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 import memoraize.domain.photo.enums.TagCategory;
 
 public interface VisionApiService {
-	Map<TagCategory, List<String>> getResultMap();
 
-	void connect(MultipartFile image, byte[] imageBytes) throws IOException;
+	Map<TagCategory, List<String>> connect(MultipartFile image, byte[] imageBytes) throws IOException;
 
 	List<String> detectLabel(MultipartFile image, byte[] imageBytes) throws IOException;
 

@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,6 +24,7 @@ import memoraize.domain.review.entity.Review;
 import memoraize.domain.user.entity.mapping.Follow;
 import memoraize.domain.user.enums.LoginType;
 import memoraize.domain.user.web.dto.UserRequestDTO;
+import memoraize.domain.voice.entity.Voice;
 import memoraize.global.entity.BaseEntity;
 
 @Entity
@@ -80,6 +82,9 @@ public class User extends BaseEntity {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Review> reviewList = new ArrayList<>();
 
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Voice voice;
+
 	// 연관 관계 편의 메서드
 
 	public void addAlbum(Album album) {
@@ -134,6 +139,11 @@ public class User extends BaseEntity {
 
 		if (request.getIntroduction() != null && !request.getIntroduction().isEmpty())
 			this.introduction = request.getIntroduction();
+	}
+
+	public void updateVoice(Voice voice) {
+		this.voice = voice;
+		voice.changeUser(this);
 	}
 
 }

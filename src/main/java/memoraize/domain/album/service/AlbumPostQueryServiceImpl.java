@@ -3,6 +3,8 @@ package memoraize.domain.album.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.converter.AlbumPostConverter;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.enums.SortStatus;
@@ -28,11 +29,11 @@ import memoraize.domain.user.repository.UserRepository;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AlbumPostQueryServiceImpl implements AlbumPostQueryService {
+	private static final Logger log = LogManager.getLogger(AlbumPostQueryServiceImpl.class);
 	private final AlbumPostRepository albumPostRepository;
 	private final UserRepository userRepository;
 	private final PhotoRepository photoRepository;

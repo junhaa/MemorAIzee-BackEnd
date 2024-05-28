@@ -7,12 +7,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.converter.AlbumPostConverter;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.entity.mapping.AlbumLiked;
@@ -27,20 +28,23 @@ import memoraize.domain.review.entity.Place;
 import memoraize.domain.review.repository.PlaceRepository;
 import memoraize.domain.slideshow.service.SlideShowCommandService;
 import memoraize.domain.user.entity.User;
+import memoraize.domain.voice.service.VoiceCommandService;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
+	private static final Logger log = LogManager.getLogger(AlbumPostCommandServiceImpl.class);
 
 	private final AlbumPostRepository albumPostRepository;
 	private final PlaceRepository placeRepository;
 	private final AlbumLikedRepository albumLikedRepository;
 	private final PhotoCommandService photoCommandService;
 	private final SlideShowCommandService slideShowCommandService;
+
+	private final VoiceCommandService voiceCommandService;
 
 	@Override
 	@Transactional
@@ -99,6 +103,14 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 		}
 
 		albumPost = albumPostRepository.saveAndFlush(albumPost);
+
+		// 만약 유저가 저장한 음성 녹음이 있으면 내래이션 생성
+		if (user.getVoice() != null) {
+			for (Photo photo : albumPost.getPhotoImages()) {
+				// Async
+				voiceCommandService.createPhotoNarrationAndSave(photo, user.getVoice().getVoiceKey());
+			}
+		}
 
 		slideShowCommandService.makeSlideShow(albumPost);
 

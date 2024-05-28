@@ -1,5 +1,7 @@
 package memoraize.domain.review.web.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.enums.SortStatus;
 import memoraize.domain.review.converter.ReviewConverter;
 import memoraize.domain.review.entity.Review;
@@ -23,11 +24,12 @@ import memoraize.domain.user.entity.User;
 import memoraize.global.annotation.LoginUser;
 import memoraize.global.response.ApiResponse;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/reviews")
 public class ReviewRestController {
+
+	private static final Logger log = LogManager.getLogger(ReviewRestController.class);
 
 	private final ReviewCommandService reviewCommandService;
 	private final ReviewQueryService reviewQueryService;

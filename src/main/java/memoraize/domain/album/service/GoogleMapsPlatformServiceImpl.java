@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.repository.AlbumPostRepository;
 import memoraize.domain.album.web.dto.GoogleMapsPlatformResponseDTO;
@@ -21,8 +22,9 @@ import memoraize.domain.photo.entity.Photo;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class GoogleMapsPlatformServiceImpl implements GoogleMapsPlatformService {
+
+	private static final Logger log = LogManager.getLogger(GoogleMapsPlatformServiceImpl.class);
 
 	private final AlbumPostRepository albumPostRepository;
 

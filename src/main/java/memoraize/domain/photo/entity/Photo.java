@@ -20,6 +20,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.review.entity.Place;
+import memoraize.domain.voice.entity.PhotoNarration;
 import memoraize.global.entity.BaseEntity;
 
 @Entity
@@ -57,6 +58,9 @@ public class Photo extends BaseEntity {
 	@OneToOne(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Metadata metadata;
 
+	@OneToOne(mappedBy = "photo", cascade = CascadeType.ALL, orphanRemoval = true)
+	private PhotoNarration photoNarration;
+
 	// 연관관계 편의 메서드
 	public void setAlbum(Album album) {
 		this.album = album;
@@ -86,5 +90,10 @@ public class Photo extends BaseEntity {
 
 	public void setImageUrl(String imageUrl) {
 		this.imageUrl = imageUrl;
+	}
+
+	public void setPhotoNarration(PhotoNarration photoNarration) {
+		this.photoNarration = photoNarration;
+		photoNarration.changePhoto(this);
 	}
 }

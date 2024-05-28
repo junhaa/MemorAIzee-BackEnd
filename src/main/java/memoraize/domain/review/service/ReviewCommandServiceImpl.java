@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.entity.Uuid;
 import memoraize.domain.photo.exception.MetadataNotExistException;
@@ -28,11 +29,11 @@ import memoraize.domain.review.web.dto.ReviewRequestDTO;
 import memoraize.domain.user.entity.User;
 import memoraize.global.aws.s3.AmazonS3Manager;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ReviewCommandServiceImpl implements ReviewCommandService {
+	private static final Logger log = LogManager.getLogger(ReviewCommandServiceImpl.class);
 	private final ReviewRepository reviewRepository;
 	private final PlaceRepository placeRepository;
 	private final PhotoRepository photoRepository;

@@ -3,18 +3,20 @@ package memoraize.global.util;
 import java.io.File;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
 import org.springframework.stereotype.Service;
 
-import lombok.extern.slf4j.Slf4j;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
 @Service
-@Slf4j
 public class FFmpegService {
+	private static final Logger log = LogManager.getLogger(FFmpegService.class);
+
 	public String mergeVideoFiles(String[] inputFiles) {
 		String fileName = UUID.randomUUID().toString();
 		String outputFile = fileName + ".mp4";  // 출력 파일
