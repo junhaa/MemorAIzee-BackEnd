@@ -90,7 +90,6 @@ public class AmazonS3Manager {
 		try {
 			PutObjectResult putObjectResult = amazonS3.putObject(
 				new PutObjectRequest(amazonConfig.getBucket(), keyName, file.getInputStream(), metadata));
-			log.info("result={}", putObjectResult.getContentMd5());
 		} catch (IOException e) {
 			log.error("error at AmazonS3Manager uploadFile : {}", (Object)e.getStackTrace());
 			throw new GeneralException(ErrorStatus._S3_FILE_SAVE_ERROR);
