@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.service.AlbumPostQueryService;
 import memoraize.domain.user.converter.UserConverter;
 import memoraize.domain.user.entity.User;
@@ -29,7 +28,6 @@ import memoraize.global.response.ApiResponse;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/user")
-@Slf4j
 public class UserRestController {
 
 	private final UserCommandService userCommandService;
@@ -43,7 +41,6 @@ public class UserRestController {
 	@PostMapping("/signup")
 	public ApiResponse<UserResponseDTO.SignupResponseDTO> signup(
 		@Valid @RequestBody UserRequestDTO.SignupRequestDTO request) {
-		log.info("request = {}", request);
 		User user = userCommandService.join(request);
 		return ApiResponse.onSuccess(UserConverter.toSignupResponseDTO(user));
 	}

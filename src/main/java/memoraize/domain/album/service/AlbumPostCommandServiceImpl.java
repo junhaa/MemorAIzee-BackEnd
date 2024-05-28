@@ -7,12 +7,13 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.converter.AlbumPostConverter;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.entity.mapping.AlbumLiked;
@@ -31,11 +32,11 @@ import memoraize.domain.voice.service.VoiceCommandService;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
+	private static final Logger log = LogManager.getLogger(AlbumPostCommandServiceImpl.class);
 
 	private final AlbumPostRepository albumPostRepository;
 	private final PlaceRepository placeRepository;

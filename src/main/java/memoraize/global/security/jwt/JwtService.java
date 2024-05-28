@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import javax.crypto.SecretKey;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.user.repository.UserRepository;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Getter
@@ -43,6 +43,7 @@ public class JwtService {
 	@Value("${spring.security.jwt.refresh.header}")
 	private String refreshHeader;
 
+	private static final Logger log = LogManager.getLogger(JwtService.class);
 
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
 	private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
@@ -130,7 +131,7 @@ public class JwtService {
 			.parseSignedClaims(accessToken)
 			.getPayload();
 
-			return Optional.ofNullable(String.valueOf(claims.get("loginId")));
+		return Optional.ofNullable(String.valueOf(claims.get("loginId")));
 	}
 
 	/**

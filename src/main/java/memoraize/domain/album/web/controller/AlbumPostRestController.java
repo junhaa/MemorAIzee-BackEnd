@@ -1,5 +1,7 @@
 package memoraize.domain.album.web.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.album.converter.AlbumPostConverter;
 import memoraize.domain.album.entity.Album;
 import memoraize.domain.album.enums.SortStatus;
@@ -25,11 +26,11 @@ import memoraize.domain.user.entity.User;
 import memoraize.global.annotation.LoginUser;
 import memoraize.global.response.ApiResponse;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/album")
 public class AlbumPostRestController {
+	private static final Logger log = LogManager.getLogger(AlbumPostRestController.class);
 	private final AlbumPostCommandService albumPostCommandService;
 	private final AlbumPostQueryService albumPostQueryService;
 

@@ -12,7 +12,7 @@ import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
 public class FileConverter {
-	private static final Logger LOGGER = LogManager.getLogger(FileConverter.class);
+	private static final Logger log = LogManager.getLogger(FileConverter.class);
 
 	public static MultipartFile toMultipartFile(File file, String fileName) {
 
@@ -24,7 +24,7 @@ public class FileConverter {
 				"audio/mpeg",
 				input);
 		} catch (Exception e) {
-			LOGGER.error("MultipartFile 변환 중 에러가 발생했습니다. {}", e.getMessage());
+			log.error("MultipartFile 변환 중 에러가 발생했습니다. {}", e.getMessage());
 			throw new GeneralException(ErrorStatus._FILE_CONVERT_ERROR);
 		}
 		return multipartFile;

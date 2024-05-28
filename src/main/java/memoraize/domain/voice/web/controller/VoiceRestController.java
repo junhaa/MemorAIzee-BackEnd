@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import memoraize.domain.user.entity.User;
-import memoraize.domain.voice.VoiceConverter;
+import memoraize.domain.voice.converter.VoiceConverter;
 import memoraize.domain.voice.entity.Voice;
 import memoraize.domain.voice.service.VoiceCommandService;
 import memoraize.domain.voice.web.dto.VoiceRequestDto;

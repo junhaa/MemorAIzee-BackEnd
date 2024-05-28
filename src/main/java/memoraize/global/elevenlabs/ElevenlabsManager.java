@@ -29,7 +29,7 @@ import memoraize.global.exception.GeneralException;
 @RequiredArgsConstructor
 public class ElevenlabsManager {
 
-	private static final Logger LOGGER = LogManager.getLogger(ElevenlabsManager.class);
+	private static final Logger log = LogManager.getLogger(ElevenlabsManager.class);
 
 	@Value("${voice.elevenlabs.apikey}")
 	private String apiKey;

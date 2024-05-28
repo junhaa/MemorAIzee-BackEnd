@@ -1,4 +1,4 @@
-package memoraize.domain.voice;
+package memoraize.domain.voice.converter;
 
 import memoraize.domain.voice.entity.Voice;
 import memoraize.domain.voice.web.dto.VoiceResponseDto;

@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,13 +24,11 @@ import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.drew.metadata.exif.GpsDirectory;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.entity.PhotoHashTag;
 import memoraize.domain.photo.entity.Uuid;
 import memoraize.domain.photo.enums.TagCategory;
 import memoraize.domain.photo.exception.ExtractPlaceException;
-import memoraize.domain.photo.repository.PhotoRepository;
 import memoraize.domain.photo.repository.UuidRepository;
 import memoraize.domain.review.converter.PlaceConverter;
 import memoraize.domain.review.entity.Place;
@@ -39,11 +39,11 @@ import memoraize.global.exception.GeneralException;
 import memoraize.global.gcp.map.GoogleMapManager;
 import memoraize.global.gcp.map.dto.GooglePlaceApiResponseDTO;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PhotoCommandServiceImpl implements PhotoCommandService {
+	private static final Logger log = LogManager.getLogger(PhotoCommandServiceImpl.class);
 
 	private final UuidRepository uuidRepository;
 	private final AmazonS3Manager amazonS3Manager;
@@ -51,8 +51,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 	private final GoogleMapManager googleMapManager;
 	private final VisionApiService visionApiService;
 	private final GeminiApiService geminiApiService;
-
-	private final PhotoRepository photoRepository;
 
 	/**
 	 * 사진 저장

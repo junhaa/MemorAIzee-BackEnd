@@ -1,5 +1,7 @@
 package memoraize.domain.slideshow.web.controller;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,16 +11,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.slideshow.service.SlideShowQueryService;
 import memoraize.domain.slideshow.web.dto.SlideShowRequestDTO;
 import memoraize.global.response.ApiResponse;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/slideshow")
 public class SlideShowRestController {
+	private static final Logger log = LogManager.getLogger(SlideShowRestController.class);
 	private final SlideShowQueryService slideShowQueryService;
 
 	@PostMapping("/webhook")

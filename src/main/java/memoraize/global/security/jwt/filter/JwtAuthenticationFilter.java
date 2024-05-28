@@ -1,16 +1,12 @@
 package memoraize.global.security.jwt.filter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import memoraize.domain.user.entity.User;
-import memoraize.domain.user.repository.UserRepository;
-import memoraize.domain.user.service.UserQueryService;
-import memoraize.global.security.jwt.JwtService;
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,18 +14,22 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import memoraize.domain.user.entity.User;
+import memoraize.domain.user.repository.UserRepository;
+import memoraize.domain.user.service.UserQueryService;
+import memoraize.global.security.jwt.JwtService;
 
 @RequiredArgsConstructor
-@Slf4j
 /**
  * JWT Authentication 필터
  */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+	private static final Logger log = LogManager.getLogger(JwtAuthenticationFilter.class);
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
 	private final UserQueryService userQueryService;
@@ -48,7 +48,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	 * 	요청에 Refresh Token 존재 X -> Access Token 검증
 	 */
 	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
+		FilterChain filterChain) throws ServletException, IOException {
 		String refreshToken = jwtService.extractRefreshToken(request)
 			.filter(jwtService::isTokenValid)
 			.orElse(null);
@@ -99,7 +100,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				.ifPresent(loginId -> userQueryService.getUserWithAuthorities(loginId)
 					.ifPresent(this::saveAuthentication)));
 
-
 		filterChain.doFilter(request, response);
 	}
 
@@ -112,8 +112,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			password = UUID.randomUUID().toString();
 		}
 
-		Set<SimpleGrantedAuthority> authorities = myUser.getAuthorityList().stream().map(authority -> new SimpleGrantedAuthority(authority.getRole().toString())).collect(
-			Collectors.toSet());
+		Set<SimpleGrantedAuthority> authorities = myUser.getAuthorityList()
+			.stream()
+			.map(authority -> new SimpleGrantedAuthority(authority.getRole().toString()))
+			.collect(
+				Collectors.toSet());
 
 		UserDetails userDetailsUser = org.springframework.security.core.userdetails.User.builder()
 			.username(myUser.getLoginId())

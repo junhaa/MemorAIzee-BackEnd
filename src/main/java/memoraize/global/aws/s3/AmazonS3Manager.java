@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,18 +17,17 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectResult;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.entity.Uuid;
 import memoraize.global.aws.exception.S3FileSaveException;
 import memoraize.global.config.AmazonConfig;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class AmazonS3Manager {
 
+	private static final Logger log = LogManager.getLogger(AmazonS3Manager.class);
 	private final AmazonS3 amazonS3;
 	private final AmazonConfig amazonConfig;
 

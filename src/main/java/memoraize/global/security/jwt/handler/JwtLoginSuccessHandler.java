@@ -2,6 +2,8 @@ package memoraize.global.security.jwt.handler;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -14,7 +16,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.user.entity.User;
 import memoraize.domain.user.enums.LoginType;
 import memoraize.domain.user.repository.UserRepository;
@@ -22,13 +23,13 @@ import memoraize.domain.user.web.dto.UserResponseDTO;
 import memoraize.global.response.ApiResponse;
 import memoraize.global.security.jwt.JwtService;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 /**
  * JWT 로그인 필터 Success Handler
  */
 public class JwtLoginSuccessHandler implements AuthenticationSuccessHandler {
+	private static final Logger log = LogManager.getLogger(JwtLoginSuccessHandler.class);
 	private final JwtService jwtService;
 	private final ObjectMapper objectMapper;
 	private final UserRepository userRepository;

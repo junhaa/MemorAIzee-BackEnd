@@ -3,6 +3,8 @@ package memoraize.domain.photo.service;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,12 +18,11 @@ import org.springframework.web.client.RestTemplate;
 import com.google.gson.Gson;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GeminiApiServiceImpl implements GeminiApiService {
+	private static final Logger log = LogManager.getLogger(GeminiApiServiceImpl.class);
 	private Gson gson = new Gson();
 	private HttpHeaders headers = new HttpHeaders();
 

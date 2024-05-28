@@ -1,11 +1,12 @@
 package memoraize.domain.user.service;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.user.converter.UserConverter;
 import memoraize.domain.user.entity.Authority;
 import memoraize.domain.user.entity.User;
@@ -22,11 +23,11 @@ import memoraize.global.aws.s3.AmazonS3Manager;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserCommandServiceImpl implements UserCommandService {
+	private static final Logger log = LogManager.getLogger(UserCommandServiceImpl.class);
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final AmazonS3Manager amazonS3Manager;

@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,16 +25,15 @@ import com.google.protobuf.ByteString;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.enums.TagCategory;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 @Getter
 public class VisionApiServiceImpl implements VisionApiService {
+	private static final Logger log = LogManager.getLogger(VisionApiServiceImpl.class);
 	private Map<TagCategory, List<String>> resultMap = new ConcurrentHashMap<>();
 	@Value("${cloud.google.vision-api.number-of-label}")
 	private int numberOfLable;

@@ -3,6 +3,8 @@ package memoraize.global.security.oauth;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -13,17 +15,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.user.entity.Authority;
 import memoraize.domain.user.entity.User;
 import memoraize.domain.user.enums.LoginType;
 import memoraize.domain.user.enums.Role;
 import memoraize.domain.user.repository.UserRepository;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+	private static final Logger log = LogManager.getLogger(CustomOAuth2UserService.class);
 
 	private final UserRepository userRepository;
 
@@ -43,13 +44,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 		OAuth2UserService<OAuth2UserRequest, OAuth2User> delegate = new DefaultOAuth2UserService();
 		OAuth2User oAuth2User = delegate.loadUser(userRequest);
 
-
 		String registrationId = userRequest.getClientRegistration().getRegistrationId(); // 인증 서버 ID
 		LoginType loginType = getLoginType(registrationId); // 소셜 로그인 종류
 		String userNameAttributeName = userRequest.getClientRegistration()
 			.getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName(); // 인증 서버에서 제공하는 고유 값
 		Map<String, Object> attributes = oAuth2User.getAttributes(); // 소셜 로그인에서 API가 제공하는 유저 정보
-
 
 		// socialType에 따라 유저 정보를 통해 OAuthAttributes 객체 생성
 		OAuthAttributes extractAttributes = OAuthAttributes.of(loginType, userNameAttributeName, attributes);
@@ -60,8 +59,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
 		// DefaultOAuth2User를 구현한 CustomOAuth2User 객체를 생성해서 반환
 		return new CustomOAuth2User(
-			createdUser.getAuthorityList().stream().map(authority -> new SimpleGrantedAuthority(authority.getRole().toString())).collect(
-				Collectors.toList()),
+			createdUser.getAuthorityList()
+				.stream()
+				.map(authority -> new SimpleGrantedAuthority(authority.getRole().toString()))
+				.collect(
+					Collectors.toList()),
 			attributes,
 			extractAttributes.getNameAttributeKey(),
 			createdUser.getLoginId(),
@@ -74,10 +76,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 	 * 어떤 종류의 소셜 로그인인지 Enum으로 반환
 	 */
 	private LoginType getLoginType(String registrationId) {
-		if(NAVER.equals(registrationId)) {
+		if (NAVER.equals(registrationId)) {
 			return LoginType.NAVER;
 		}
-		if(KAKAO.equals(registrationId)) {
+		if (KAKAO.equals(registrationId)) {
 			return LoginType.KAKAO;
 		}
 		return LoginType.GOOGLE;
@@ -92,7 +94,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 			attributes.getOauth2UserInfo().getId()).orElse(null);
 
 		log.info("findUser = {}", findUser);
-		if(findUser == null) {
+		if (findUser == null) {
 			return saveUser(attributes, loginType);
 		}
 		return findUser;

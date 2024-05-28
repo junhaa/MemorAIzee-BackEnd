@@ -7,6 +7,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -18,16 +20,15 @@ import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.global.aws.s3.AmazonS3Manager;
 import memoraize.global.enums.statuscode.ErrorStatus;
 import memoraize.global.exception.GeneralException;
 import memoraize.global.gcp.map.dto.GooglePlaceApiResponseDTO;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class GoogleMapManager {
+	private static final Logger log = LogManager.getLogger(GoogleMapManager.class);
 
 	@Value("${cloud.google.map.api-key}")
 	private String apiKey;

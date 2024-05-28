@@ -14,6 +14,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +24,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import memoraize.domain.photo.entity.Photo;
 import memoraize.domain.photo.entity.PhotoHashTag;
 import memoraize.domain.photo.enums.TagCategory;
@@ -35,7 +36,6 @@ import memoraize.global.exception.GeneralException;
 import memoraize.global.util.BasicAuthHeader;
 import memoraize.global.util.FFmpegService;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CloudinaryService {
@@ -54,6 +54,8 @@ public class CloudinaryService {
 
 	@Value("${cloud.cloudinary.api-secret}")
 	private String apiSecret;
+
+	private static final Logger log = LogManager.getLogger(CloudinaryService.class);
 
 	private final FFmpegService ffmpegService;
 
