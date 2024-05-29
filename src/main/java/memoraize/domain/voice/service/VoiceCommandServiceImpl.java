@@ -67,7 +67,9 @@ public class VoiceCommandServiceImpl implements VoiceCommandService {
 
 		photo.setPhotoNarration(photoNarration);
 
-		photoNarrationRepository.save(photoNarration);
+		if (!photoNarrationRepository.existsByNarrationUrl(photoNarration.getNarrationUrl())) {
+			photoNarrationRepository.save(photoNarration);
+		}
 	}
 
 }

@@ -102,13 +102,14 @@ public class AlbumPostCommandServiceImpl implements AlbumPostCommandService {
 			albumPost.addPhoto(photo);
 		}
 
-		albumPost = albumPostRepository.saveAndFlush(albumPost);
+		albumPost = albumPostRepository.save(albumPost);
 
 		// 만약 유저가 저장한 음성 녹음이 있으면 내래이션 생성
 		if (user.getVoice() != null) {
 			for (Photo photo : albumPost.getPhotoImages()) {
 				// Async
-				voiceCommandService.createPhotoNarrationAndSave(photo, user.getVoice().getVoiceKey());
+				voiceCommandService.createPhotoNarrationAndSave(photo,
+					user.getVoice().getVoiceKey());
 			}
 		}
 
