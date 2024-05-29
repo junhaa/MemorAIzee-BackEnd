@@ -141,9 +141,6 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 
 				photo.setPlace(place);
 				photo.setImageUrl(imageUrl);
-				for (PhotoHashTag hashTag : hashTagList) {
-					photo.addHashTag(hashTag);
-				}
 			} catch (Exception e) {
 				log.error("사진 저장 중 에러가 발생했습니다. {}", e.getMessage());
 				throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
