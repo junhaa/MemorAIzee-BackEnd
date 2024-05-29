@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bytedeco.ffmpeg.global.avcodec;
 import org.bytedeco.javacv.FFmpegFrameGrabber;
 import org.bytedeco.javacv.FFmpegFrameRecorder;
 import org.bytedeco.javacv.Frame;
@@ -25,8 +26,8 @@ public class FFmpegService {
 		FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(outputFile, 1280, 720);
 
 		// 영상과 오디오 코덱 설정
-		recorder.setVideoCodecName("libx264");
-		recorder.setAudioCodecName("aac");
+		recorder.setVideoCodec(avcodec.AV_CODEC_ID_H264);
+		recorder.setAudioCodec(avcodec.AV_CODEC_ID_AAC);
 		recorder.setVideoBitrate(10000000);  // 예: 비트레이트를 10 Mbps로 설정
 
 		try {
