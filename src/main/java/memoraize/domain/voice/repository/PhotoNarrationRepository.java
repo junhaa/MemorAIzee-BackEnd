@@ -7,5 +7,5 @@ import memoraize.domain.voice.entity.PhotoNarration;
 
 @Repository
 public interface PhotoNarrationRepository extends JpaRepository<PhotoNarration, Long> {
-
+	boolean existsByNarrationUrl(String narrationUrl);
 }

@@ -10,6 +10,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,6 +52,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 	private final GoogleMapManager googleMapManager;
 	private final VisionApiService visionApiService;
 	private final GeminiApiService geminiApiService;
+	private final ExecutorService visionThreadPool;
 
 	/**
 	 * 사진 저장
@@ -117,7 +119,7 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				}
 
 				CompletableFuture<String> titleCompletableFuture = CompletableFuture.supplyAsync(
-					() -> geminiApiService.generateTitle(colors, labels,place != null ? place.getPlaceName() : null));
+					() -> geminiApiService.generateTitle(colors, labels, place != null ? place.getPlaceName() : null));
 				CompletableFuture<String> commentCompletableFuture = CompletableFuture.supplyAsync(
 					() -> geminiApiService.generateComment(colors, labels,
 						place != null ? place.getPlaceName() : null));
@@ -195,10 +197,12 @@ public class PhotoCommandServiceImpl implements PhotoCommandService {
 				place = placeOptional.get();
 			} else {
 				if (ret.isPresent()) {
-					// 사진 저장
-					String referenceName = extractPhotoReference(
-						ret.get().getPlaces().get(0).getPhotos().get(0).getReferenceName());
-					googlePlacePhotoUrl = googleMapManager.getPlacePhotoWithGoogleMap(referenceName);
+					if (ret.get().getPlaces().get(0).getPhotos() != null) {
+						// 사진 저장
+						String referenceName = extractPhotoReference(
+							ret.get().getPlaces().get(0).getPhotos().get(0).getReferenceName());
+						googlePlacePhotoUrl = googleMapManager.getPlacePhotoWithGoogleMap(referenceName);
+					}
 				}
 
 				place = PlaceConverter.toPlace(pname, googlePlaceId, googlePlacePhotoUrl);
