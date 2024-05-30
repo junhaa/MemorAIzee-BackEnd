@@ -1,5 +1,8 @@
 package memoraize.domain.slideshow.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,6 +12,7 @@ import memoraize.domain.album.exception.AlbumNotExistException;
 import memoraize.domain.album.repository.AlbumPostRepository;
 import memoraize.domain.slideshow.entity.Memories;
 import memoraize.domain.slideshow.repository.MemoriesRepository;
+import memoraize.domain.slideshow.web.dto.SlideShowResponseDTO;
 import memoraize.global.cloudinary.CloudinaryService;
 
 @Service
@@ -31,5 +35,25 @@ public class SlideShowQueryServiceImpl implements SlideShowQueryService {
 			return memoriesUrl;
 		}
 		return memories.getUrl();
+	}
+
+	@Override
+	public List<SlideShowResponseDTO.SlideShowPreviewResponseDto> getSlideShowPreview() {
+		List<SlideShowResponseDTO.SlideShowPreviewResponseDto> result = new ArrayList<>();
+		for (Memories memories : memoriesRepository.findAll()) {
+			if (memories.getUrl() != null) {
+				SlideShowResponseDTO.SlideShowPreviewResponseDto dto = SlideShowResponseDTO.SlideShowPreviewResponseDto.builder()
+					.slideShowUrl(memories.getUrl())
+					.albumName(memories.getAlbum().getAlbumName())
+					.mainImageUrl(memories.getAlbum().getPhotoImages().get(0).getImageUrl())
+					.userName(memories.getAlbum().getUser().getUserName())
+					.build();
+
+				result.add(dto);
+				if (result.size() == 2)
+					break;
+			}
+		}
+		return result;
 	}
 }

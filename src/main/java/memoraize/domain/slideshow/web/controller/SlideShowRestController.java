@@ -1,5 +1,7 @@
 package memoraize.domain.slideshow.web.controller;
 
+import java.util.List;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import memoraize.domain.slideshow.service.SlideShowQueryService;
 import memoraize.domain.slideshow.web.dto.SlideShowRequestDTO;
+import memoraize.domain.slideshow.web.dto.SlideShowResponseDTO;
 import memoraize.global.response.ApiResponse;
 
 @RestController
@@ -32,5 +35,10 @@ public class SlideShowRestController {
 	public ApiResponse<String> getMemoriesUrl(@PathVariable(name = "albumId") Long albumId) {
 		String memoriesUrl = slideShowQueryService.getMemoriesUrl(albumId);
 		return ApiResponse.onSuccess(memoriesUrl);
+	}
+
+	@GetMapping()
+	public ApiResponse<List<SlideShowResponseDTO.SlideShowPreviewResponseDto>> getSlideShowPreview() {
+		return ApiResponse.onSuccess(slideShowQueryService.getSlideShowPreview());
 	}
 }
