@@ -142,7 +142,7 @@ public class CloudinaryService {
 				.addTextBody("resource_type", "video")
 				.addTextBody("upload_preset", uploadPreset)
 				.addTextBody("manifest_json", generateManifestJson(photo.getImageUrl(), colorCode, photo.getTitle(),
-					getHashTagString(hashTagList)))
+					hashTagList))
 				.build();
 
 			httpPost.setEntity(entity);
@@ -151,7 +151,8 @@ public class CloudinaryService {
 
 			int statusCode = response.getStatusLine().getStatusCode();
 			if (statusCode != 200) {
-				log.error("슬라이드 쇼 제작 API 요청에서 에러가 발생했습니다. errorcode = {}", statusCode);
+				log.error("슬라이드 쇼 제작 API 요청에서 에러가 발생했습니다. errorcode = {}",
+					response.getEntity().getContent().toString());
 				throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
 			}
 
@@ -166,13 +167,28 @@ public class CloudinaryService {
 		String hashTagString = "";
 		for (PhotoHashTag hashTag : hashTagList) {
 			if (hashTag.getTagCategorie() == TagCategory.LABEL) {
-				hashTagString += "#" + hashTag.getTagName() + " ";
+				hashTagString += "#" + hashTag.getTagName() + "";
 			}
 		}
 		return hashTagString;
 	}
 
-	private String generateManifestJson(String imageUrl, String colorCode, String photoTitle, String hashTagString) {
+	private String generateManifestJson(String imageUrl, String colorCode, String photoTitle,
+		List<PhotoHashTag> hashTagList) {
+		ArrayList<String> hashTagString = new ArrayList<>();
+		for (PhotoHashTag hashTag : hashTagList) {
+			if (hashTag.getTagCategorie() != TagCategory.COLOR) {
+				hashTagString.add(hashTag.getTagName());
+			}
+		}
+
+		if (hashTagList.size() != 6) {
+			log.error("해쉬태그의 크기가 맞지 않습니다. size = {}", hashTagList.size());
+			throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+		}
+
+		int fontSize = 26;
+
 		String manifest = "{\n"
 			+ "  \"type\": \"video\",\n"
 			+ "  \"width\": 1280,\n"
@@ -182,9 +198,12 @@ public class CloudinaryService {
 			+ "  \"vars\": {\n"
 			+ "    \"bgColor\": \"" + colorCode + "\",\n"
 			+ "    \"imageUrl\": \"" + imageUrl + "\",\n"
-			+ "    \"sponsoredText\": \"" + photoTitle + "\",\n"
-			+ "    \"titleText\": \"" + hashTagString + "\",\n"
-			+ "    \"ctaText\": \"Read more\"\n"
+			+ "    \"sponsoredText\": \"" + colorCode + "\",\n"
+			+ "    \"titleText1\": \"" + "# " + hashTagString.get(0) + "\",\n"
+			+ "    \"titleText2\": \"" + "# " + hashTagString.get(1) + "\",\n"
+			+ "    \"titleText3\": \"" + "# " + hashTagString.get(2) + "\",\n"
+			+ "    \"titleText4\": \"" + "# " + hashTagString.get(3) + "\",\n"
+			+ "    \"titleText5\": \"" + "# " + hashTagString.get(4) + "\"\n"
 			+ "  },\n"
 			+ "  \"tracks\": [\n"
 			+ "    {\n"
@@ -226,23 +245,24 @@ public class CloudinaryService {
 			+ "      ]\n"
 			+ "    }, // track 2\n"
 			+ "    {\n"
-			+ "      \"x\": 950,\n"
+			+ "      \"x\": 1150,\n"
 			+ "      \"keyframes\": {\n"
 			+ "        \"0\": {\n"
-			+ "          \"y\": 290,\n"
+			+ "          \"y\": 630,\n"
 			+ "          \"opacity\": 0\n"
 			+ "        },\n"
 			+ "        \"1000\": {\n"
-			+ "          \"y\": 290,\n"
+			+ "          \"y\": 640,\n"
 			+ "          \"opacity\": 0\n"
 			+ "        },\n"
 			+ "        \"2000\": {\n"
-			+ "          \"y\": 280,\n"
+			+ "          \"y\": 640,\n"
 			+ "          \"opacity\": 1\n"
 			+ "        }\n"
 			+ "      },\n"
 			+ "      \"clipDefaults\": {\n"
-			+ "        \"fontSize\": 24,\n"
+			+ "        \"fontType\": \"Noto Sans\",\n"
+			+ "        \"fontSize\": 18,\n"
 			+ "        \"fontColor\": \"white\"\n"
 			+ "      },\n"
 			+ "      \"clips\": [\n"
@@ -255,28 +275,123 @@ public class CloudinaryService {
 			+ "    {\n"
 			+ "      \"x\": 950,\n"
 			+ "      \"width\": 300,\n"
-			+ "      \"height\": 300,\n"
+			+ "      \"height\": 50,\n"
+			+ "      \"keyframes\": {\n"
+			+ "        \"0\": {\n"
+			+ "          \"y\":80\n"
+			+ "        },\n"
+			+ "        \"1000\": {\n"
+			+ "          \"y\": 100\n"
+			+ "        }\n"
+			+ "      },\n"
+			+ "      \"clipDefaults\": {\n"
+			+ "        \"textAlign\": \"left\",\n"
+			+ "        \"fontSize\": " + fontSize + ",\n"
+			+ "        \"fontColor\": \"white\"\n"
+			+ "      },\n"
+			+ "      \"clips\": [\n"
+			+ "        {\n"
+			+ "          \"text\": \"{{titleText1}}\",\n"
+			+ "          \"type\": \"textArea\"\n"
+			+ "        }\n"
+			+ "      ]\n"
+			+ "    },\n"
+			+ "     {\n"
+			+ "      \"x\": 950,\n"
+			+ "      \"width\": 300,\n"
+			+ "      \"height\": 30,\n"
+			+ "      \"keyframes\": {\n"
+			+ "        \"0\": {\n"
+			+ "          \"y\": 150\n"
+			+ "        },\n"
+			+ "        \"1000\": {\n"
+			+ "          \"y\": 170\n"
+			+ "        }\n"
+			+ "      },\n"
+			+ "      \"clipDefaults\": {\n"
+			+ "        \"textAlign\": \"left\",\n"
+			+ "        \"fontSize\": " + fontSize + ",\n"
+			+ "        \"fontColor\": \"white\"\n"
+			+ "      },\n"
+			+ "      \"clips\": [\n"
+			+ "        {\n"
+			+ "          \"text\": \"{{titleText2}}\",\n"
+			+ "          \"type\": \"textArea\"\n"
+			+ "        }\n"
+			+ "      ]\n"
+			+ "    },\n"
+			+ "    {\n"
+			+ "      \"x\": 950,\n"
+			+ "      \"width\": 300,\n"
+			+ "      \"height\": 30,\n"
+			+ "      \"keyframes\": {\n"
+			+ "        \"0\": {\n"
+			+ "          \"y\": 220\n"
+			+ "        },\n"
+			+ "        \"1000\": {\n"
+			+ "          \"y\": 240\n"
+			+ "        }\n"
+			+ "      },\n"
+			+ "      \"clipDefaults\": {\n"
+			+ "        \"textAlign\": \"left\",\n"
+			+ "        \"fontSize\": " + fontSize + ",\n"
+			+ "        \"fontColor\": \"white\"\n"
+			+ "      },\n"
+			+ "      \"clips\": [\n"
+			+ "        {\n"
+			+ "          \"text\": \"{{titleText3}}\",\n"
+			+ "          \"type\": \"textArea\"\n"
+			+ "        }\n"
+			+ "      ]\n"
+			+ "    },\n"
+			+ "    {\n"
+			+ "      \"x\": 950,\n"
+			+ "      \"width\": 300,\n"
+			+ "      \"height\": 30,\n"
 			+ "      \"keyframes\": {\n"
 			+ "        \"0\": {\n"
 			+ "          \"y\": 290\n"
 			+ "        },\n"
 			+ "        \"1000\": {\n"
-			+ "          \"y\": 300\n"
+			+ "          \"y\": 310\n"
 			+ "        }\n"
 			+ "      },\n"
 			+ "      \"clipDefaults\": {\n"
 			+ "        \"textAlign\": \"left\",\n"
-			+ "        \"fontSize\": 32,\n"
-			+ "        \"fontType\": \"Noto Sans\",\n"
+			+ "        \"fontSize\": " + fontSize + ",\n"
 			+ "        \"fontColor\": \"white\"\n"
 			+ "      },\n"
 			+ "      \"clips\": [\n"
 			+ "        {\n"
-			+ "          \"text\": \"{{titleText}}\",\n"
+			+ "          \"text\": \"{{titleText4}}\",\n"
 			+ "          \"type\": \"textArea\"\n"
 			+ "        }\n"
 			+ "      ]\n"
-			+ "    } // track 4\n"
+			+ "    },\n"
+			+ "    {\n"
+			+ "      \"x\": 950,\n"
+			+ "      \"width\": 300,\n"
+			+ "      \"height\": 30,\n"
+			+ "      \"keyframes\": {\n"
+			+ "        \"0\": {\n"
+			+ "          \"y\": 360\n"
+			+ "        },\n"
+			+ "        \"1000\": {\n"
+			+ "          \"y\": 380\n"
+			+ "        }\n"
+			+ "      },\n"
+			+ "      \"clipDefaults\": {\n"
+			+ "        \"textAlign\": \"left\",\n"
+			+ "        \"fontSize\": " + fontSize + ",\n"
+			+ "        \"fontColor\": \"white\"\n"
+			+ "      },\n"
+			+ "      \"clips\": [\n"
+			+ "        {\n"
+			+ "          \"text\": \"{{titleText5}}\",\n"
+			+ "          \"type\": \"textArea\"\n"
+			+ "        }\n"
+			+ "      ]\n"
+			+ "    }\n"
 			+ "  ]\n"
 			+ "}";
 
