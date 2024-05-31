@@ -40,7 +40,7 @@ public class SlideShowQueryServiceImpl implements SlideShowQueryService {
 	@Override
 	public List<SlideShowResponseDTO.SlideShowPreviewResponseDto> getSlideShowPreview() {
 		List<SlideShowResponseDTO.SlideShowPreviewResponseDto> result = new ArrayList<>();
-		for (Memories memories : memoriesRepository.findAll()) {
+		for (Memories memories : memoriesRepository.findAllByOrderByIdDesc()) {
 			if (memories.getUrl() != null) {
 				SlideShowResponseDTO.SlideShowPreviewResponseDto dto = SlideShowResponseDTO.SlideShowPreviewResponseDto.builder()
 					.slideShowUrl(memories.getUrl())
