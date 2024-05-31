@@ -39,6 +39,7 @@ public class GeminiApiServiceImpl implements GeminiApiService {
             jsonBody =
                 "{\"contents\":[{\"parts\":[{\"text\":\"이 글은 여행 사진에 대한 정보야. 사진의 label은 " + joinStrings(labels) + ". " +
                     "사진의 dominant color는" + joinStrings(colors) + ". " +
+                        "구체적인 상황을 묘사하지마. dominant color를 출력하지 마. "+
                     "사진의 제목을 30자 내외로 써 줘.\"}]}]}";
 
         } else {
@@ -46,7 +47,7 @@ public class GeminiApiServiceImpl implements GeminiApiService {
             jsonBody =
                 "{\"contents\":[{\"parts\":[{\"text\":\"이 글은 여행 사진에 대한 정보야. 사진의 label은 " + joinStrings(labels) + ". " +
                     "사진의 dominant color는" + joinStrings(colors) + ". " +
-                    "위치는" + place + ". 위치 정보는 모호하게 표현해." +
+                    "위치는" + place + ". 위치 정보는 모호하게 표현해. 구체적인 상황을 묘사하지마. dominant color를 출력하지 마."+
                     "사진의 제목을 30자 내외로 써 줘.\"}]}]}";
 
         }
@@ -75,7 +76,7 @@ public class GeminiApiServiceImpl implements GeminiApiService {
                 "{\"contents\":[{\"parts\":[{\"text\":\"이 글은 여행 사진에 대한 정보야. 사진의 label은 " + joinStrings(labels) + ". " +
                     "사진의 dominant color는" + joinStrings(colors) + ". " +
                     "사진에 대한 글을 150자 내외로 써 줘. 완결된 문장으로 써. 최대한 추상적으로 작성해. " +
-                    "주어진 정보만 활용해. 두루뭉술하게 작성해. 시간을 유추할 수 있는 단어를 넣지 마. 일기 형식으로 작성 해.\"}]}]}";
+                    "주어진 정보만 활용해. 두루뭉술하게 작성해. 시간을 유추할 수 있는 단어를 넣지 마. dominant color를 출력하지 마. 일기 형식으로 작성 해.\"}]}]}";
         } else {
             // JSON 데이터 구성
             jsonBody =
@@ -83,7 +84,7 @@ public class GeminiApiServiceImpl implements GeminiApiService {
                     "사진의 dominant colors는" + joinStrings(colors) + ". " +
                     "위치는" + place + ". " +
                     "사진에 대한 글을 150자 내외로 써 줘. 완결된 문장으로 써. 최대한 추상적으로 작성해. " +
-                    "주어진 정보만 활용해. 두루뭉술하게 작성해. 시간을 유추할 수 있는 단어를 넣지 마. 일기 형식으로 작성 해.\"}]}]}";
+                    "주어진 정보만 활용해. 두루뭉술하게 작성해. 시간을 유추할 수 있는 단어를 넣지 마. dominant color를 출력하지 마. 일기 형식으로 작성 해.\"}]}]}";
 
         }
 
